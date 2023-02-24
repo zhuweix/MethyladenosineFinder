@@ -42,6 +42,7 @@ setup(
         'console_scripts': [
             # command = package.module:function
             'm6aworkflow = workflow.workflow:main',
+            'm6apreprocess = workflow.preprocess:main'
         ],},
     project_urls={
         "Bug Reports": "https://github.com/zhuweix/MethyladenosineFinder/issues",
