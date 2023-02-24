@@ -12,15 +12,15 @@ def filter_ccs(bam: str, min_qual: int, min_cov: int, output: str):
                 qual = sum(quals) / len(quals)
             else:
                 continue
-            np = read.get_tag('np')
+            npass = read.get_tag('np')
             if zmw not in read_score:
-                read_score[zmw] = (np, qual)
+                read_score[zmw] = (npass, qual)
             else:
-                read_score[zmw] = max((np, qual), read_score[zmw])
+                read_score[zmw] = max((npass, qual), read_score[zmw])
     zmw_list = []
-    for zmw, (np, qual) in read_score.items():
+    for zmw, (npass, qual) in read_score.items():
         zmw = zmw.split('/')[1]
-        if np < min_cov:
+        if npass < min_cov:
             continue
         if qual < min_qual:
             continue
