@@ -7,7 +7,7 @@ import pathlib
 
 here = pathlib.Path(__file__).parent.resolve()
 
-long_description = (here / "README.md").read_text(encoding="utf-8")
+long_description = (here / "README.MD").read_text(encoding="utf-8")
 
 setup(
     name="MethyladenosineFinder",
@@ -40,7 +40,6 @@ setup(
 
     entry_points={
         'console_scripts': [
-            # command = package.module:function
             'm6aworkflow = workflow.workflow:main',
             'm6apreprocess = workflow.preprocess:main'
         ],},
