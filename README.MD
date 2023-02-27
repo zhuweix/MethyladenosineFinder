@@ -92,7 +92,33 @@ $    --thread [Threads]  \ # Default=16
 
 # Follow the workflow to submit the batch script
 # The commands are stored in [Prefix].pipeline
+## Example Pipeline file
 
+# Split Subreads by ZMW: Large Number of Files will be generated!
+sbatch \
+        --mem 20g \
+        --gres=lscratch:40 \
+        --job-name corsplit \
+        --time 600  \
+       [output.split.sh] 
+
+# Predict m6A sites
+# output.ipd_analysis.sh is generated after output.split.sh
+sbatch \
+        --gres=lscratch:1 \
+        --time 600 \
+        --job-name ipd \
+        --logdir /gpfs/gsfs9/users/ClarkLab/xuz5/xuz5/test/log \
+        [output.ipd_analysis.sh] 
+
+# Merge Reads
+sbatch \
+        --mem 20g \
+        --gres=lscratch:1 --time 100 \
+        --cpus-per-task=16 \
+        --time 400 \
+        --job-name merge \
+        [output.merge.sh]
 
 # Clean up the tmp Files
 
