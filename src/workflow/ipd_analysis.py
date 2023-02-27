@@ -82,7 +82,7 @@ def cigar_writer(modpositions: list, start: int, stop: int):
 
 
 def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecutoffdict: dict,
-                    reference: str, coveragecutoff=2, is_strict=True, timeout=600):
+                    reference: str, coveragecutoff=2, is_strict=True, timeout=600, is_clean=True):
     """
     Generate pseudo reads for individual ZMW with modification predicted by IPDSummary.
 
@@ -95,6 +95,7 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
         scorecutoffdict (dict): Dictionary For {Coverage: p-value threshold}
         is_strict (bool): Whether only include m6A in ipdSummary
         timeout (int): Maximal Process time for one ZMW
+        is_clean (bool): whether to remove the tmp gff and zmw bam file
 
     Returns:
         None. Stored in {output}/ipd.tmp.{zmw_name}.gff and {output}/ipd.tmp.{zmw_name}.bam
@@ -187,9 +188,10 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
                                                 end=readstop,
                                                 scorecutoffdict=scorecutoffdict,
                                                 is_strict=is_strict)
-                # Remove tmp file
-                cmd = ['rm', tmp_gff]
-                proc = subprocess.run(cmd, check=True)
+                if is_clean:
+                    # Remove tmp file
+                    cmd = ['rm', tmp_gff]
+                    proc = subprocess.run(cmd)
 
                 # generate cigar
                 cigar = cigar_writer(modpositions, readstart, readstop)
@@ -235,9 +237,10 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
                                             end=stop,
                                             scorecutoffdict=scorecutoffdict,
                                             is_strict=is_strict)
-            # Remove tmp file
-            # cmd = ['rm', tmp_gff]
-            # proc = subprocess.run(cmd, check=True)
+            if is_clean:
+                # Remove tmp file
+                cmd = ['rm', tmp_gff]
+                proc = subprocess.run(cmd)
 
             # generate cigar
             cigar = cigar_writer(modpositions, start, stop)
@@ -255,6 +258,11 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
             final_bam.append(new_read)
             with pysam.AlignmentFile(tmp_bam, 'wb', header=header) as outbam:
                 outbam.write(new_read)
+    if is_clean:
+        cmd = ['rm', bamfile]
+        proc = subprocess.run(cmd)
+        cmd = ['rm', bamfile + '.bai']
+        proc = subprocess.run(cmd)
 
 
 if __name__ == "__main__":
@@ -267,6 +275,7 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--coveragecutoff', default=3)
     parser.add_argument('-s', '--scorefn', required=True)
     parser.add_argument('-t', '--timeout', default=600)
+    parser.add_argument('--is_clean', default=True)
 
     args = parser.parse_args()
     score_dict = load_score(score_fn=args.scorefn)
@@ -278,4 +287,5 @@ if __name__ == "__main__":
         coveragecutoff=int(args.coveragecutoff),
         scorecutoffdict=score_dict,
         is_strict=int(args.is_m6a) > 0,
-        timeout=int(args.timeout))
+        timeout=int(args.timeout),
+        is_clean=args.is_clean)

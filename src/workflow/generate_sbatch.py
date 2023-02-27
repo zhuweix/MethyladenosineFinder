@@ -2,7 +2,7 @@ import os
 import argparse
 
 
-def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, score_fn : str,
+def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, score_fn : str, is_clean: bool,
                     sbatchdir: str, ref: str, mod: str, cov: str, savedir: str, split_time: int, ipd_time: int,
                     merge_time: int, mem: str, logdir: str, threads: int, is_m6A=0, timeout=600):
     if not os.path.isdir(sbatchdir):
@@ -42,14 +42,14 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
                       '\t-o {ipd} \\\n\t-s {sh} \\\n'
                       '\t-m {mod} \\\n\t-z {zlist} \\\n'
                       '\t-t {timeout} \\\n\t--scorefn {scorefn} \\\n'
-                      '\t--log {log} \\\n'
+                      '\t--log {log} \\\n\t--is_clean {isclean} \\\n'
                       '\t--job {job} \\\n'
                       '\t-r {ref} \\\n\t-f {strict_flag}\n\n').format(
             gen_py=gen_ipd_py, log=logdir, job=jobname, scorefn=score_fn,
             zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd',
             mod=mod, ref=ref, sh=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'),
             zlist=os.path.join(fullprefix + '_zmw', 'zmw.cov.{}.list.txt'.format(cov)),
-            cov=cov, strict_flag=is_m6A, timeout=timeout)]
+            cov=cov, strict_flag=is_m6A, timeout=timeout, is_clean=is_clean)]
         filep.write('\n'.join(ipdscript))
 
     p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!\n'
@@ -85,6 +85,8 @@ module load samtools''').format(log_out, log_err),
             merge=os.path.join(savedir, '{}.merge.bam'.format(prefix)),
             sort=os.path.join(savedir, '{}.sort.bam'.format(prefix)),
             thread=threads)]
+        if is_clean:
+            mergebam.append(r"xargs -a {} -d'\n' rm -f".format(os.path.join(fullprefix + '_ipd', 'bamfile.list')))
         filep.write('\n'.join(mergebam))
     p3 = ('# Merge Reads\n'
           'sbatch \\\n'
