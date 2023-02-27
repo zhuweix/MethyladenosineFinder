@@ -49,7 +49,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
             zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd',
             mod=mod, ref=ref, sh=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'),
             zlist=os.path.join(fullprefix + '_zmw', 'zmw.cov.{}.list.txt'.format(cov)),
-            cov=cov, strict_flag=is_m6A, timeout=timeout, is_clean=is_clean)]
+            cov=cov, strict_flag=is_m6A, timeout=timeout, isclean=is_clean)]
         filep.write('\n'.join(ipdscript))
 
     p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!\n'
@@ -87,6 +87,7 @@ module load samtools''').format(log_out, log_err),
             thread=threads)]
         if is_clean:
             mergebam.append(r"xargs -a {} -d'\n' rm -f".format(os.path.join(fullprefix + '_ipd', 'bamfile.list')))
+            mergebam.append(r"rm -f {}".format(os.path.join(savedir, '{}.merge.bam'.format(prefix))))
         filep.write('\n'.join(mergebam))
     p3 = ('# Merge Reads\n'
           'sbatch \\\n'

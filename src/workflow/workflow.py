@@ -8,8 +8,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--bamfile', required=True,
                         help='Aligned BAM file, pbmm2/pbalign is recommended.')
-    parser.add_argument('-r', '--reference', help='Reference File in FASTA format', required=True)
-    parser.add_argument('-m', '--mod', help='Indexed Reference for Adenine locations', required=True)
+    parser.add_argument('-r', '--ref', help='Reference File in FASTA format', required=True)
+    parser.add_argument('--index', help='Indexed Reference for Adenine locations', required=True)
     parser.add_argument('-o', '--outputdir', default='./output/',
                         help='Output Folder. Default: ./output/',)
     parser.add_argument('-t', '--tmpdir', default='./tmp/',
@@ -41,10 +41,10 @@ def main():
         prefix=args.prefix,
         sbatchdir=os.path.abspath(args.sbatchdir),
         logdir=os.path.abspath(args.logdir),
-        ref=os.path.abspath(args.reference),
+        ref=os.path.abspath(args.ref),
         mem=args.mem,
         jobname=args.jobname,
-        mod=os.path.abspath(args.mod),
+        mod=os.path.abspath(args.index),
         cov=args.coverage,
         gres=args.gres,
         savedir=os.path.abspath(args.outputdir),
