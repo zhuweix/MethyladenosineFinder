@@ -41,7 +41,7 @@ module load smrtanalysis
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--bamdir', required=True)
-    parser.add_argument('-c', '--coveragecutoff', default=3)
+    parser.add_argument('-c', '--coveragecutoff', default=3, type=int)
     parser.add_argument('-o', '--outdir', required=True)
     parser.add_argument('-s', '--swarmfile', required=True)
     parser.add_argument('-z', '--zmwfile', required=True)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument('--log', required=True)
     parser.add_argument('-t', '--timeout', default=600, type=int)
     parser.add_argument('-f', '--is_strict_flag', default=1)
-    parser.add_argument('--batch', default=400)
+    parser.add_argument('--batch', type=int, default=400)
     parser.add_argument('--is_clean', default=True)
 
     args = parser.parse_args()
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         reference=args.reference,
         is_strict=args.is_strict_flag,
         is_clean=args.is_clean,
-        coveragecutoff=int(args.coveragecutoff),
+        coveragecutoff=args.coveragecutoff,
         timeout=args.timeout,
         score_fn=args.scorefn,
         batch=args.batch)

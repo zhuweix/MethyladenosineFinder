@@ -77,18 +77,18 @@ $ samtools index [Output_Aligned_Sorted_Subreads.bam]
 ```bash
 # Generate the batch script
 $ m6aworkflow  \
-$    --bam [AlignedSubreads.bam | FilteredAlignedSubreads.bam] \
-$    --ref [Reference.FASTA] \
-$    --index [Reference_index.data] \ # Indexed Reference for Adenine locations, see preprocess
-$    --sbatchdir [Folder for SBATCH files for SLURM submission] \  # Default=./sh 
-$    --outputdir [Folder for Output BAM files] \ # Default=./output
-$    --tmpdir [Folder for Temporary Files] \ # Default=./tmp/
-$    --jobname [JobName For Slurm] \ # Default=maw
-$    --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=SMF
-$    --cov [MinCoverage] \ # Default=8
-$    --batchsize [BatchSize] \# Number of ZMWs per SLURM array job; Default=500
-$    --thread [Threads]  \ # Default=16
-$    --is_clean True # Whether to clean most of the tmp files Default=True
+    --bam [AlignedSubreads.bam | FilteredAlignedSubreads.bam] \
+    --ref [Reference.FASTA] \
+    --index [Reference_index.data] \ # Indexed Reference for Adenine locations, see preprocess
+    --sbatchdir [Folder for SBATCH files for SLURM submission] \  # Default=./sh 
+    --outputdir [Folder for Output BAM files] \ # Default=./output
+    --tmpdir [Folder for Temporary Files] \ # Default=./tmp/
+    --jobname [JobName For Slurm] \ # Default=maw
+    --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=SMF
+    --cov [MinCoverage] \ # Default=8
+    --batchsize [BatchSize] \# Number of ZMWs per SLURM array job; Default=500
+    --thread [Threads]  \ # Default=16
+    --is_clean True # Whether to clean most of the tmp files Default=True
 
 # IMPORTANT NOTICE: The number of Batch array jobs submitted to SLURM is [Number of ZMWs] / [BatchSize], very small batchsize will result in a large amount of SLURM jobs
 
