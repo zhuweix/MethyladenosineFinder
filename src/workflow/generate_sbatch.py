@@ -42,8 +42,10 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
                       '\t-o {ipd} \\\n\t-s {sh} \\\n'
                       '\t-m {mod} \\\n\t-z {zlist} \\\n'
                       '\t-t {timeout} \\\n'
+                      '\t--log {logdir} \\\n'
+                      '\t--job {job} \\\n'
                       '\t-r {ref} \\\n\t-f {strict_flag}\n\n').format(
-            gen_py=gen_ipd_py,
+            gen_py=gen_ipd_py, log=logdir, job=jobname,
             zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd',
             mod=mod, ref=ref, sh=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'),
             zlist=os.path.join(fullprefix + '_zmw', 'zmw.cov.{}.list.txt'.format(cov)),
@@ -56,7 +58,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
           '\t--job-name corsplit \\\n\t--time {stime}  \\\n'
           '\t{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem, stime=split_time)
     p2 = ('# Predict m6A sites\n'
-          '# {sh2} is generated after {sh1}'
+          '# {sh2} is generated after {sh1}\n'
           'sbatch \\\n'
           '\t--gres={scratch}:1 \\\n\t-p 2 --time {itime} \\\n'
           '\t--job-name ipd \\\n\t--logdir {logdir} \\\n'

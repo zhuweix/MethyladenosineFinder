@@ -19,7 +19,7 @@ def filter_split_zmw(bamfile: str, coveragecutoff: int, outdir: str):
         for read in bam:
             # Only use primary alignment
             readflag = read.flag
-            if readflag != 0 or readflag != 16:
+            if readflag != 0 and readflag != 16:
                 continue
             # Get ZMW name: Name of ZMW read: {movieName}/{ZMWNumber}/{qStart}_{qEnd}
             holeNumber = read.query_name.split('/')[1]

@@ -2,7 +2,7 @@
 import argparse
 import os
 
-def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, batch: int, score_fn: str,
+def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, batch: int, score_fn: str, log: str, job: str,
                    motifmodfile: str, reference: str, coveragecutoff: int, is_strict: int, timeout: int):
     """Generate Swarm file for IPDSummary analysis"""
     # load zmw list
@@ -13,10 +13,8 @@ def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, 
     script_dir = os.path.dirname(os.path.realpath(__file__))
     num_jobs = len(zmw_list)
     num_subjobs = num_jobs // batch
-    if num_jobs % batch == 0:
+    if num_jobs % batch != 0:
         num_subjobs += 1
-    else:
-        num_subjobs += 2
     # generate command
     content = [r'''
 #!/bin/bash
@@ -26,7 +24,10 @@ def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, 
 #SBATCH --array=1-{}%4
 module load samtools
 module load smrtanalysis
-'''.format(num_subjobs)]
+'''.format(
+        os.path.join(log, '{}.ipd.out'.format(job)),
+        os.path.join(log, '{}.ipd.err'.format(job)),
+        num_subjobs)]
     for zmw in zmw_list:
         content.append('python '
                        '{}/ipd_analysis.py '
@@ -48,6 +49,8 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--motifmodfile')
     parser.add_argument('-r', '--reference')
     parser.add_argument('--scorefn')
+    parser.add_argument('--job')
+    parser.add_argument('--log')
     parser.add_argument('-t', '--timeout', default=600, type=int)
     parser.add_argument('-f', '--is_strict_flag', default=1)
     parser.add_argument('--batch', default=400)
@@ -59,6 +62,8 @@ if __name__ == "__main__":
         swarmfile=args.swarmfile,
         zmwfile=args.zmwfile,
         outdir=args.outdir,
+        log=log,
+        job=job,
         motifmodfile=args.motifmodfile,
         reference=args.reference,
         is_strict=args.is_strict_flag,
