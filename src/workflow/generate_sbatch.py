@@ -58,16 +58,19 @@ module load samtools
             cov=cov, strict_flag=is_m6A, timeout=timeout)]
         filep.write('\n'.join(ipdscript))
 
-    p1 = ('sbatch \\\n'
+    p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!'
+          'sbatch \\\n'
           '\t--mem {mem} \\\n\t--gres={scratch}:40 \\\n'
-          '\t--job-name corsplit \\\n\t--time 800  \\n'
-          '\t{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem)
-    p2 = ('sbatch \\\n'
+          '\t--job-name corsplit \\\n\t--time 800  \\\n'
+          '\t{sh1} \n\n').format(sh1='{}.split.sh'.format(prefix), scratch=gres, mem=mem)
+    p2 = ('# Predict m6A sites'
+          '# {sh2} is generated after {sh1}'
+          'sbatch \\\n'
           '\t--gres={scratch}:1 \\\n\t-p 2 \\\n'
-          '\t--job-name ipd \\\n\t--logdir ./tmp_log/ \\\n'
+          '\t--job-name ipd \\\n\t--logdir {logdir} \\\n'
           '\t{sh2} \n\n').format(
-        scratch=gres,
-        sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
+        scratch=gres, logdir=logdir, sh1='{}.split.sh'.format(prefix),
+        sh2='{}.ipd_analysis.sh'.format(prefix))
     log_out = os.path.join(logdir, '{}.merge.out'.format(jobname))
     log_err = os.path.join(logdir, '{}.merge.err'.format(jobname))
     mfn = '{}.merge.sh'.format(prefix)
@@ -90,10 +93,11 @@ module load samtools''').format(log_out, log_err),
             sort=os.path.join(savedir, '{}.sort.bam'.format(prefix)),
             thread=threads)]
         filep.write('\n'.join(mergebam))
-    p3 = ('sbatch \\\n'
+    p3 = ('# Merge Reads'
+          'sbatch \\\n'
           '\t--mem {mem} \\\n\t--gres={scratch}:1 \\\n'
           '\t--cpus-per-task={thread} \\\n\t--time 400 \\\n\t--job-name merge \\\n \t{sh}\n\n').format(
-        sh=mfn, scratch=gres, mem=mem, thread=threads)
+        sh='{}.merge.sh'.format(prefix), scratch=gres, mem=mem, thread=threads)
 
     with open(pfn, 'w') as filep:
         filep.write(''.join([p1, p2, p3]))
