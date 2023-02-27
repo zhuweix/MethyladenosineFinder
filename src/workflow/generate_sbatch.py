@@ -5,6 +5,12 @@ import argparse
 def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
                     sbatchdir: str, ref: str, mod: str, cov: str, savedir: str,
                     mem: str, logdir: str, threads: int, is_m6A=0, timeout=600):
+    if not os.path.isdir(sbatchdir):
+        os.makedirs(sbatchdir)
+    if not os.path.isdir(logdir):
+        os.makedirs(logdir)
+    if not os.path.isdir(savedir):
+        os.makedirs(savedir)
     sfn = '{}.split.sh'.format(prefix)
     sfn = os.path.join(sbatchdir, sfn)
     fullprefix = os.path.join(out, prefix)

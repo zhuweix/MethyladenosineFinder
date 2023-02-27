@@ -2,7 +2,7 @@
 import argparse
 import os
 
-def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, batch: int,
+def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, batch: int, score_fn: str,
                    motifmodfile: str, reference: str, coveragecutoff: int, is_strict: int, timeout: int):
     """Generate Swarm file for IPDSummary analysis"""
     # load zmw list
@@ -30,9 +30,9 @@ module load smrtanalysis
     for zmw in zmw_list:
         content.append('python '
                        '{}/ipd_analysis.py '
-                       '-b {}/tmp.{}.bam -o {} -m {} -r {} -c {} -s {} -t {}'.format(
+                       '-b {}/tmp.{}.bam -o {} -m {} -r {} -c {} -f {} -t {} -s {}'.format(
                         script_dir, bamdir, zmw, outdir, motifmodfile,
-                        reference, coveragecutoff, is_strict, timeout))
+                        reference, coveragecutoff, is_strict, timeout, score_fn))
 
     with open(swarmfile, 'w') as filep:
         filep.write('\n'.join(content))
@@ -47,9 +47,10 @@ if __name__ == "__main__":
     parser.add_argument('-z', '--zmwfile')
     parser.add_argument('-m', '--motifmodfile')
     parser.add_argument('-r', '--reference')
+    parser.add_argument('--scorefn')
     parser.add_argument('-t', '--timeout', default=600, type=int)
 
-    parser.add_argument('-f', '--is_strict_flag', default=0)
+    parser.add_argument('-f', '--is_strict_flag', default=1)
     parser.add_argument('--batch', default=400)
 
     args = parser.parse_args()
@@ -64,4 +65,5 @@ if __name__ == "__main__":
         is_strict=args.is_strict_flag,
         coveragecutoff=int(args.coveragecutoff),
         timeout=args.timeout,
+        score_fn=args.scorefn,
         batch=args.batch)

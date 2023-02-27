@@ -262,9 +262,9 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output')
     parser.add_argument('-r', '--reference')
     parser.add_argument('-m', '--motifpositionfile')
-    parser.add_argument('-s', '--is_strict', default=0)
+    parser.add_argument('-f', '--is_m6a', default=1)
     parser.add_argument('-c', '--coveragecutoff')
-    parser.add_argument('--scorefn')
+    parser.add_argument('-s', '--scorefn')
     parser.add_argument('-t', '--timeout', default=600)
 
     args = parser.parse_args()
@@ -275,5 +275,5 @@ if __name__ == "__main__":
         motifpositionfile=args.motifpositionfile,
         reference=args.reference,
         coveragecutoff=int(args.coveragecutoff),
-        is_strict=int(args.is_strict) > 0,
+        is_strict=int(args.is_m6a) > 0,
         timeout=int(args.timeout))
