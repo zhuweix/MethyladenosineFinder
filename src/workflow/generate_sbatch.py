@@ -42,7 +42,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
                       '\t-o {ipd} \\\n\t-s {sh} \\\n'
                       '\t-m {mod} \\\n\t-z {zlist} \\\n'
                       '\t-t {timeout} \\\n'
-                      '\t--log {logdir} \\\n'
+                      '\t--log {log} \\\n'
                       '\t--job {job} \\\n'
                       '\t-r {ref} \\\n\t-f {strict_flag}\n\n').format(
             gen_py=gen_ipd_py, log=logdir, job=jobname,
