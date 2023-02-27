@@ -15,14 +15,14 @@ def load_score(score_fn: str):
             scorecutoffdict[int(ent[0])] = float(ent[1])
     return scorecutoffdict
 
-def ipd_motif_finder(gff: str, motifpositionlist: set, avecov: int, mod: str,
+def ipd_motif_finder(gff: str, motifpositionlist: np.ndarray, avecov: int, mod: str,
                      scorecutoffdict: dict,
                      start: int, end: int, is_strict=False):
     """
     Filter the modified Motif Location from PacBio IPDSummary
     Args:
         gff (str): name of the gff file from PacBio IPDSummary
-        motifpositionlist (set): 1-based modifided nucleotide location
+        motifpositionlist (np.ndarray): numpy array for A locations 1=A/T
         avecov (int): average coverage for Subreads per ZMW
         mod (str): Type of the modification predicted by PacBio IPDSummary
         scorecutoffdict (dict): Dictionary For {Coverage: p-value threshold}
@@ -52,7 +52,7 @@ def ipd_motif_finder(gff: str, motifpositionlist: set, avecov: int, mod: str,
                     if line[2] != mod:  # Include modification as well
                         continue
                 pos = int(line[3])
-                if start <= pos <= end and pos in motifpositionlist and int(line[5]) >= pvalue:
+                if start <= pos <= end and motifpositionlist[pos -1] and int(line[5]) >= pvalue:
                     modpositions[int(line[3])] = True
     modpositions = sorted(list(modpositions.keys()))
     return modpositions
