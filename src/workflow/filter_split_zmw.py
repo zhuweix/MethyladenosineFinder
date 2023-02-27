@@ -27,13 +27,12 @@ def filter_split_zmw(bamfile: str, coveragecutoff: int, outdir: str):
                 zmw_count.setdefault(holeNumber, 0)
                 zmw_count[holeNumber] += 1
 
-    print('Counting ZMW holes with >={} coverage (subreads)'.format(coveragecutoff))
+    print('Counting ZMW holes with >={} coverage (subreads) in {} Raw ZMWs'.format(coveragecutoff, len(zmw_count)))
 
     filter_ZMWholes = []
 
     # Save zmws
-    print('Saving ZMW reads')
-    read_depth = {}
+    print('Split Subreads by ZMW')
     zmw_read = {}
     count = 0
     with pysam.AlignmentFile(bamfile, "rb", check_sq=False) as bam:

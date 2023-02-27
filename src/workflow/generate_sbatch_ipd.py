@@ -11,7 +11,7 @@ def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, 
         for line in filep:
             zmw_list.append(line.split()[0])
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    num_jobs = len(zmw)
+    num_jobs = len(zmw_list)
     num_subjobs = num_jobs // batch
     if num_jobs % batch == 0:
         num_subjobs += 1

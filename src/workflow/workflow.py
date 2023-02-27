@@ -29,6 +29,9 @@ def main():
     parser.add_argument('-f', '--m6Aonly', default=1, help='1=Only Include m6A sites, 0=All modified As. Default=1')
     parser.add_argument('--timeout', default=600, type=int,
                         help='Maximal Time (s) for single ipdSummary job. Default: 600')
+    parser.add_argument('--splittime', default=600, type=int, help='Time limit to Split Reads (min). Default=600')
+    parser.add_argument('--ipdtime', default=600, type=int, help='Time limit to predict m6A sites (min). Default=600')
+    parser.add_argument('--mergetime', default=100, type=int, help='Time limit to Merge Reads (min). Default=100')
     args = parser.parse_args()
 
     generate_sbatch(
@@ -45,8 +48,12 @@ def main():
         gres=args.gres,
         savedir=args.outputdir,
         threads=args.threads,
+        split_time=args.splittime,
+        ipd_time=args.ipdtime,
+        merge_time=args.mergetime,
         is_m6A=args.m6Aonly,
-        timeout=int(args.timeout))
+        timeout=args.timeout,
+        )
 
 
 def workflow_csv(parameter_fn: str):

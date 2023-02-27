@@ -3,8 +3,8 @@ import argparse
 
 
 def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
-                    sbatchdir: str, ref: str, mod: str, cov: str, savedir: str,
-                    mem: str, logdir: str, threads: int, is_m6A=0, timeout=600):
+                    sbatchdir: str, ref: str, mod: str, cov: str, savedir: str, split_time: int, ipd_time: int,
+                    merge_time: int, mem: str, logdir: str, threads: int, is_m6A=0, timeout=600):
     if not os.path.isdir(sbatchdir):
         os.makedirs(sbatchdir)
     if not os.path.isdir(logdir):
@@ -58,18 +58,18 @@ module load samtools
             cov=cov, strict_flag=is_m6A, timeout=timeout)]
         filep.write('\n'.join(ipdscript))
 
-    p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!'
+    p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!\n'
           'sbatch \\\n'
           '\t--mem {mem} \\\n\t--gres={scratch}:40 \\\n'
-          '\t--job-name corsplit \\\n\t--time 800  \\\n'
-          '\t{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem)
-    p2 = ('# Predict m6A sites'
+          '\t--job-name corsplit \\\n\t--time {stime}  \\\n'
+          '\t{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem, stime=split_time)
+    p2 = ('# Predict m6A sites\n'
           '# {sh2} is generated after {sh1}'
           'sbatch \\\n'
-          '\t--gres={scratch}:1 \\\n\t-p 2 \\\n'
+          '\t--gres={scratch}:1 \\\n\t-p 2 --time {itime} \\\n'
           '\t--job-name ipd \\\n\t--logdir {logdir} \\\n'
           '\t{sh2} \n\n').format(
-        scratch=gres, logdir=logdir, sh1=sfn,
+        scratch=gres, logdir=logdir, sh1=sfn, itime=ipd_time,
         sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
     log_out = os.path.join(logdir, '{}.merge.out'.format(jobname))
     log_err = os.path.join(logdir, '{}.merge.err'.format(jobname))
@@ -93,11 +93,11 @@ module load samtools''').format(log_out, log_err),
             sort=os.path.join(savedir, '{}.sort.bam'.format(prefix)),
             thread=threads)]
         filep.write('\n'.join(mergebam))
-    p3 = ('# Merge Reads\\\n'
+    p3 = ('# Merge Reads\n'
           'sbatch \\\n'
-          '\t--mem {mem} \\\n\t--gres={scratch}:1 \\\n'
+          '\t--mem {mem} \\\n\t--gres={scratch}:1 --time {mtime} \\\n'
           '\t--cpus-per-task={thread} \\\n\t--time 400 \\\n\t--job-name merge \\\n \t{sh}\n\n').format(
-        sh=mfn, scratch=gres, mem=mem, thread=threads)
+        sh=mfn, scratch=gres, mem=mem, thread=threads, mtime=merge_time)
 
     with open(pfn, 'w') as filep:
         filep.write(''.join([p1, p2, p3]))
