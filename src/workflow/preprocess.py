@@ -12,8 +12,8 @@ def main():
     zmwfromccs = subparser.add_parser('zmwfromccs', help='Get ZMWs with AveBaseQuality Filter from CCS Reads')
     filtersubread = subparser.add_parser('filtersubread', help='Filter SubReads by zmw list')
 
-    indexref.add_argument('-r', type=str, help='Reference File in FASTA Format', required=True)
-    indexref.add_argument('-o', type=str, help='Name of the index file', required=True)
+    indexref.add_argument('-r', '--ref', type=str, help='Reference File in FASTA Format', required=True)
+    indexref.add_argument('-o', '--output', type=str, help='Name of the index file', required=True)
 
     zmwfromccs.add_argument('-b', '--bam', type=str, help='CCS Read BAM file', required=True)
     zmwfromccs.add_argument('-q', '--qual', default=90, type=int,

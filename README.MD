@@ -24,6 +24,13 @@ This program predicts single-molecule
 ## How To Use
 To clone and run this application on slurm cluster, you'll need [SMRTLINK](https://www.pacb.com/support/software-downloads/) deployed on SLURM cluster; [pysam](https://pysam.readthedocs.io/), [Biopython](https://biopython.org/) and [samtools](http://www.htslib.org/) are also required.
 
+  [Installation](#Installation) • [Preprocess](#Preprocess) • [Predict m6A sites](#predict-m6a-sites)
+
+
+
+
+
+### Installation
 ```bash
 # Clone this repository
 $ git clone https://github.com/zhuweix/MethyladenosineFinder.git
@@ -31,11 +38,28 @@ $ git clone https://github.com/zhuweix/MethyladenosineFinder.git
 # Install dependencies using Conda (Except SMRTLink)
 # For SMRTLink installation, please follow the documentation on PacBio website (https://www.pacb.com/support/software-downloads/)
 
-$ conda install -c bioconda pysam,biopython,samtools
+$ conda install -c bioconda pysam biopython samtools
 
 # Go into the repository
 $ cd MethyladenosineFinder
+# setup the python package
+$ python setup.py setup
+```
+### Preprocess
+```bash
+# prepare reference index
+$ m6apreprocess index \
+$     --r [Reference.FASTA] \
+$     --output [Reference_index.data]
+# Filter ZMW by num_pass and AverageQual in PacBio CCS reads
+$ m6apreprocess zmwfromccs \
+$     --bam [PacBio_CCS.bam] \
+$     --qual [Min_AveQual, Default=90] \
+$     --cov [Min_NumPass, Default=3]
 
+```
+### Predict m6A sites
+```bash
 # [Optional] We recommend to filter PacBio subreads before the analysis workflow using the base quality score from the CCS reads before to reduce the processing time and disk usage.
 
 $ python pyworkflow.py filter \
