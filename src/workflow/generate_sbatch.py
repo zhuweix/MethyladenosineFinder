@@ -37,20 +37,12 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
         log_out = os.path.join(logdir, '{}.gen_ipd.out'.format(jobname))
         log_err = os.path.join(logdir, '{}.gen_ipd.err'.format(jobname))
         gen_ipd_py = os.path.join(script_dir, 'generate_sbatch_ipd.py')
-        ipdscript = [(
-            r'''
-#!/bin/bash
-#SBATCH -o {}
-#SBATCH -e {}
-module load smrtanalysis
-module load samtools
-''').format(log_out, log_err),
-                     ('python {gen_py} \\\n'
+        ipdscript = [('python {gen_py} \\\n'
                       '\t-b {zmw} \\\n\t-c {cov} \\\n'
                       '\t-o {ipd} \\\n\t-s {sh} \\\n'
                       '\t-m {mod} \\\n\t-z {zlist} \\\n'
                       '\t-t {timeout} \\\n'
-                      '\t-r {ref} \\\n\t-f {strict_flag}').format(
+                      '\t-r {ref} \\\n\t-f {strict_flag}\n\n').format(
             gen_py=gen_ipd_py,
             zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd',
             mod=mod, ref=ref, sh=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'),

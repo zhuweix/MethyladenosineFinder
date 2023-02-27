@@ -91,10 +91,10 @@ $    --thread [Threads]  \ # Default=16
 # IMPORTANT NOTICE: The number of Batch array jobs submitted to SLURM is [Number of ZMWs] / [BatchSize], very small batchsize will result in a large amount of SLURM jobs
 
 # Follow the workflow to submit the batch script
-# The commands are stored in [BatchScriptFolder]/[Prefix].workflow.pipeline
-$ sbatch [split.sh]
-$ sbatch [predict_m6a.sh]
-$ sbatch [merge.sh]
+# The commands are stored in [Prefix].pipeline
+
+
+# Clean up the tmp Files
 
 # [Optional] Transform BAM file to BED file for m6A sites
 
