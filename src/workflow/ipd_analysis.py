@@ -275,5 +275,6 @@ if __name__ == "__main__":
         motifpositionfile=args.motifpositionfile,
         reference=args.reference,
         coveragecutoff=int(args.coveragecutoff),
+        scorecutoffdict=score_dict,
         is_strict=int(args.is_m6a) > 0,
         timeout=int(args.timeout))
