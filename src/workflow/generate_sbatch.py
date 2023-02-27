@@ -89,6 +89,7 @@ module load samtools''').format(log_out, log_err),
             mergebam.append(r"xargs -a {} -d'\n' rm -f".format(os.path.join(fullprefix + '_ipd', 'bamfile.list')))
             mergebam.append(r"rm -f {}".format(os.path.join(savedir, '{}.merge.bam'.format(prefix))))
         filep.write('\n'.join(mergebam))
+        filep.write('\n')
     p3 = ('# Merge Reads\n'
           'sbatch \\\n'
           '\t--mem {mem} \\\n\t--gres={scratch}:1 --time {mtime} \\\n'
