@@ -166,8 +166,8 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
                 readcov = int(np.mean(cov_depth[left: right + 1]))
                 if readcov < coveragecutoff:
                     continue
-                tmp_gff = '{}/ipd.tmp.{}_{}.gff'.format(output, zmw, idx)
-                tmp_bam = '{}/ipd.tmp.{}_{}.bam'.format(output, zmw, idx)
+                tmp_gff = os.path.join(output, 'ipd.tmp.{}_{}.gff'.format(zmw, idx))
+                tmp_bam = os.path.join(output, 'ipd.tmp.{}_{}.bam'.format(zmw, idx))
 
                 # calulcate p-value for motif position using ipdSummary from PacBio
                 cmd = ['ipdSummary', bamfile, '--reference', reference,
@@ -214,8 +214,8 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
             start += 1  # 0 based to 1 based
             stop += 1
 
-            tmp_gff = '{}/ipd.tmp.{}.gff'.format(output, zmw)
-            tmp_bam = '{}/ipd.tmp.{}.bam'.format(output, zmw)
+            tmp_gff = os.path.join(output, 'ipd.tmp.{}.gff'.format(zmw))
+            tmp_bam = os.path.join(output, 'ipd.tmp.{}.bam'.format(zmw))
 
             # calulcate p-value for motif position using ipdSummary from PacBio
             cmd = ['ipdSummary', bamfile, '--reference', reference,
@@ -236,8 +236,8 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
                                             scorecutoffdict=scorecutoffdict,
                                             is_strict=is_strict)
             # Remove tmp file
-            cmd = ['rm', tmp_gff]
-            proc = subprocess.run(cmd, check=True)
+            # cmd = ['rm', tmp_gff]
+            # proc = subprocess.run(cmd, check=True)
 
             # generate cigar
             cigar = cigar_writer(modpositions, start, stop)
