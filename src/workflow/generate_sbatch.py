@@ -15,7 +15,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
     sfn = os.path.join(sbatchdir, sfn)
     fullprefix = os.path.join(out, prefix)
     pfn = '{}.pipeline'.format(prefix)
-    pfn = os.path.join(sbatchdir, pfn)
+    pfn = os.path.join('./', pfn)
     script_dir = os.path.dirname(os.path.realpath(__file__))
     filter_split_py = os.path.join(script_dir, 'filter_split_zmw.py')
     log_out = os.path.join(logdir, '{}.split.out'.format(jobname))
@@ -62,15 +62,15 @@ module load samtools
           'sbatch \\\n'
           '\t--mem {mem} \\\n\t--gres={scratch}:40 \\\n'
           '\t--job-name corsplit \\\n\t--time 800  \\\n'
-          '\t{sh1} \n\n').format(sh1='{}.split.sh'.format(prefix), scratch=gres, mem=mem)
+          '\t{sh1} \n\n').format(sh1=sfn.format(prefix), scratch=gres, mem=mem)
     p2 = ('# Predict m6A sites'
           '# {sh2} is generated after {sh1}'
           'sbatch \\\n'
           '\t--gres={scratch}:1 \\\n\t-p 2 \\\n'
           '\t--job-name ipd \\\n\t--logdir {logdir} \\\n'
           '\t{sh2} \n\n').format(
-        scratch=gres, logdir=logdir, sh1='{}.split.sh'.format(prefix),
-        sh2='{}.ipd_analysis.sh'.format(prefix))
+        scratch=gres, logdir=logdir, sh1=sfn,
+        sh2=sh2)
     log_out = os.path.join(logdir, '{}.merge.out'.format(jobname))
     log_err = os.path.join(logdir, '{}.merge.err'.format(jobname))
     mfn = '{}.merge.sh'.format(prefix)
@@ -86,18 +86,18 @@ module load samtools''').format(log_out, log_err),
              '\tsamtools cat --threads {thread} --no-PG -o {merge} \\\n'
              '\t-b {bamlist} ; \\\n'
              'samtools sort -o {sort} \\\n\t {merge} ; \\\n'
-             'samtools index {sort}').format(
+             'samtools index {sort}\n\n').format(
             ipd=fullprefix + '_ipd',
             bamlist=os.path.join(fullprefix + '_ipd', 'bamfile.list'),
             merge=os.path.join(savedir, '{}.merge.bam'.format(prefix)),
             sort=os.path.join(savedir, '{}.sort.bam'.format(prefix)),
             thread=threads)]
         filep.write('\n'.join(mergebam))
-    p3 = ('# Merge Reads'
+    p3 = ('# Merge Reads\\\n'
           'sbatch \\\n'
           '\t--mem {mem} \\\n\t--gres={scratch}:1 \\\n'
           '\t--cpus-per-task={thread} \\\n\t--time 400 \\\n\t--job-name merge \\\n \t{sh}\n\n').format(
-        sh='{}.merge.sh'.format(prefix), scratch=gres, mem=mem, thread=threads)
+        sh=mfn, scratch=gres, mem=mem, thread=threads)
 
     with open(pfn, 'w') as filep:
         filep.write(''.join([p1, p2, p3]))

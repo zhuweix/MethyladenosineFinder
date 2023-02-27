@@ -41,6 +41,8 @@ def filter_split_zmw(bamfile: str, coveragecutoff: int, outdir: str):
             # Get ZMW name: Name of ZMW read: {movieName}/{ZMWNumber}/{qStart}_{qEnd}
             holeNumber = read.query_name.split('/')[1]
             if holeNumber:
+                if holeNumber not in zmw_count:
+                    continue
                 if zmw_count[holeNumber] < coveragecutoff:
                     continue
                 zmw_read.setdefault(holeNumber, [0, []])
