@@ -26,8 +26,8 @@ def filter_ccs(bam: str, min_qual: int, min_cov: int, output: str):
             continue
         zmw_list.append(zmw)
     print('{} ZMWs have CCS reads with AveQual>={}, NumPass>={}'.format(
-        len(zmw_list, min_qual, min_cov)
-    ))
+        len(zmw_list), min_qual, min_cov)
+    )
 
     with open(output, 'w') as filep:
         filep.write('\n'.join(zmw_list))
