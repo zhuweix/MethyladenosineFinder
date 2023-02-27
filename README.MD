@@ -27,9 +27,6 @@ To clone and run this application on slurm cluster, you'll need [SMRTLINK](https
   [Installation](#Installation) • [Preprocess](#Preprocess) • [Predict m6A sites](#predict-m6a-sites)
 
 
-
-
-
 ### Installation
 ```bash
 # Clone this repository
@@ -51,40 +48,47 @@ $ python setup.py setup
 $ m6apreprocess index \
 $     --r [Reference.FASTA] \
 $     --output [Reference_index.data]
-# Filter ZMW by num_pass and AverageQual in PacBio CCS reads
+
+# Recommended: Filter the Subreads using the PacBio CCS reads
+# Get ZMW list by num_pass and AverageQual in PacBio CCS reads
 $ m6apreprocess zmwfromccs \
 $     --bam [PacBio_CCS.bam] \
+$     --output [ZMW_list.txt] \
 $     --qual [Min_AveQual, Default=90] \
 $     --cov [Min_NumPass, Default=3]
+# Filter subreads using the ZMW list (alternatively, bamsieve tool from PacBio SMRT Tools could also be used)
+$ m6apreprocess filtersubreads \
+$     --bam [PacBio_Subreads.bam] \
+$     --zmw [ZMW_list.txt] \
+$     --output [Filtered_Subreads.bam]   
+
+# Align the Subreads to Reference using pbmm2 from SMRT Tools
+$ pbmm2 index [Reference.FASTA] [Reference.mmi]
+$ pbmm2 align [Reference.mmi] [PacBio_Subreads.bam | Filtered_Subreads.bam] \
+$     [Output_Aligned_Sorted_Subreads.bam] --preset SUBREAD --sort \
+$     -j 16 [Threads for alignment] \
+$     -J 8 [Threads for sorting]
+# index the aligned bam file using pbindex from SMRT Tools
+$ pbindex [Output_Aligned_Sorted_Subreads.bam]
+$ samtools index [Output_Aligned_Sorted_Subreads.bam]
 
 ```
 ### Predict m6A sites
 ```bash
-# [Optional] We recommend to filter PacBio subreads before the analysis workflow using the base quality score from the CCS reads before to reduce the processing time and disk usage.
-
-$ python pyworkflow.py filter \
-    -subread [AlignedSubreads.bam] \
-    -ccsread [CCSReads] \
-    -pass [MinSubreadPassInCCSReads] # Default=3
-    -qual [MinQual] # Minimal Average BaseQuality in CCS reads; Default=90
-    -output [FilteredSubreads.bam] 
-
-
-# Gerenerate the batch script
-$ python pyworkflow.py predict \
-    -bam [AlignedSubreads.bam | FilteredSubreads.bam] \
-    -output [OutputFolder] \
-    -tmpdir [TmpDir] \
-    -jobname [JobNameForSlurm] \
-    -batchdir [BatchScriptFolder] \
-    -ref [Reference.fa] \
-    -prefix [Prefix] # Prefix of the sbatch files and output files; Default=SMF
-    -cov [MinCoverage] \ # Default=8
-    -batchsize [BatchSize] # Number of ZMWs per SLURM array job; Default=500
-    -thread [Threads] # Default=16
+# Generate the batch script
+$ m6aworkflow  \
+$    --bam [AlignedSubreads.bam | FilteredSubreads.bam] \
+$    --sbatchdir [Folder for SBATCH files for SLURM submission] \    
+$    --outputdir [Folder for Output BAM files] \
+$    --tmpdir [Folder for Temporary Files] \
+$    --jobname [JobName For Slurm] \
+$    --ref [Reference.fa] \
+$    --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=SMF
+$    --cov [MinCoverage] \ # Default=8
+$    --batchsize [BatchSize] \# Number of ZMWs per SLURM array job; Default=500
+$    --thread [Threads]  \ # Default=16
 
 # IMPORTANT NOTICE: The number of Batch array jobs submitted to SLURM is [Number of ZMWs] / [BatchSize], very small batchsize will result in a large amount of SLURM jobs
-
 
 # Follow the workflow to submit the batch script
 # The commands are stored in [BatchScriptFolder]/[Prefix].workflow.pipeline
@@ -92,10 +96,8 @@ $ sbatch [split.sh]
 $ sbatch [predict_m6a.sh]
 $ sbatch [merge.sh]
 
+# [Optional] Transform BAM file to BED file for m6A sites
 
-# [Optional] Generate the batch script on local machine
-
-# [Optional] Follow the batch script on local machine
 
 ```
 > **Note**
@@ -112,9 +114,9 @@ $ pbmm2 align \
     [reference.mmi] \
     [RawSubreads.bam] \
     [AlignedSubreads.bam] \
-    --sort -j 48 -J 8 --preset SUBREAD 
+    --sort -j 32 -J 8 --preset SUBREAD 
 
-$ samtools index -@ 12 [AlignedSubreads.bam]
+$ samtools index -@ 8 [AlignedSubreads.bam]
 
 ```
 * [Optional] BAM file of PacBio CCS reads
