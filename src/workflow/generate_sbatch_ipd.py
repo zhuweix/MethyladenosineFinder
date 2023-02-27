@@ -49,7 +49,6 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--reference')
     parser.add_argument('--scorefn')
     parser.add_argument('-t', '--timeout', default=600, type=int)
-
     parser.add_argument('-f', '--is_strict_flag', default=1)
     parser.add_argument('--batch', default=400)
 

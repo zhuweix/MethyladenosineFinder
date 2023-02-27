@@ -1,8 +1,10 @@
 import argparse
+import os
 from .generate_sbatch import generate_sbatch
 
 
 def main():
+    script_dir = os.path.dirname(os.path.realpath(__file__))
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--bamfile', required=True,
                         help='Aligned BAM file, pbmm2/pbalign is recommended.')
