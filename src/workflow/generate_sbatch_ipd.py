@@ -20,7 +20,7 @@ def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, 
 #SBATCH -o {}
 #SBATCH -e {}
 #SBATCH --cpus-per-task=1
-#SBATCH --array=1-{}%4
+#SBATCH --array=1-{}%2
 module load samtools
 module load smrtanalysis
 '''.format(

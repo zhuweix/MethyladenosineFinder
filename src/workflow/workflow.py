@@ -21,11 +21,11 @@ def main():
     parser.add_argument('--jobname', default='maw', help='Job prefix. Default: maw')
     parser.add_argument('-c', '--coverage', default=6, help='Minimal Subread Coverage. Default: 6')
     parser.add_argument('-@', '--threads', default=1)
-    parser.add_argument('--ipd_batch', default=400, help='Number of subjobs per batch for ipdsummary'
+    parser.add_argument('--ipdbatch', default=400, help='Number of subjobs per batch for ipdsummary'
                                                          'Default: 400')
     parser.add_argument('--mem', default='20g', help='Size of memory per cpu. Default 20g')
     parser.add_argument('--gres', default='lscratch', help='Partition for local disk. Default: lscratch')
-    parser.add_argument('--score_fn',default=os.path.abspath(os.path.join(script_dir, '../asset/default_cov_score.csv')))
+    parser.add_argument('--scorefn',default=os.path.abspath(os.path.join(script_dir, '../asset/default_cov_score.csv')))
     parser.add_argument('-f', '--m6Aonly', default=1, help='1=Only Include m6A sites, 0=All modified As. Default=1')
     parser.add_argument('--timeout', default=600, type=int,
                         help='Maximal Time (s) for single ipdSummary job. Default: 600')
@@ -54,7 +54,8 @@ def main():
         merge_time=args.mergetime,
         is_m6A=args.m6Aonly,
         timeout=args.timeout,
-        score_fn=args.score_fn,
+        score_fn=os.path.abspath(args.scorefn),
+        batchsize=args.ipdbatch,
         is_clean=args.isclean
         )
 

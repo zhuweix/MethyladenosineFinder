@@ -4,7 +4,7 @@ import argparse
 
 def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, score_fn : str, is_clean: bool,
                     sbatchdir: str, ref: str, mod: str, cov: str, savedir: str, split_time: int, ipd_time: int,
-                    merge_time: int, mem: str, logdir: str, threads: int, is_m6A=0, timeout=600):
+                    merge_time: int, mem: str, logdir: str, threads: int, batchsize: int, is_m6A=0, timeout=600):
     if not os.path.isdir(sbatchdir):
         os.makedirs(sbatchdir)
     if not os.path.isdir(logdir):
@@ -43,10 +43,10 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
                       '\t-m {mod} \\\n\t-z {zlist} \\\n'
                       '\t-t {timeout} \\\n\t--scorefn {scorefn} \\\n'
                       '\t--log {log} \\\n\t--is_clean {isclean} \\\n'
-                      '\t--job {job} \\\n'
+                      '\t--job {job} \\\n\t--batch {batch}\\\n'
                       '\t-r {ref} \\\n\t-f {strict_flag}\n\n').format(
             gen_py=gen_ipd_py, log=logdir, job=jobname, scorefn=score_fn,
-            zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd',
+            zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd', batch=batchsize,
             mod=mod, ref=ref, sh=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'),
             zlist=os.path.join(fullprefix + '_zmw', 'zmw.cov.{}.list.txt'.format(cov)),
             cov=cov, strict_flag=is_m6A, timeout=timeout, isclean=is_clean)]
@@ -55,15 +55,15 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
     p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!\n'
           'sbatch \\\n'
           '\t--mem {mem} \\\n\t--gres={scratch}:40 \\\n'
-          '\t--job-name corsplit \\\n\t--time {stime}  \\\n'
-          '\t{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem, stime=split_time)
+          '\t--job-name {job}split \\\n\t--time {stime}  \\\n'
+          '\t{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem, stime=split_time, job=jobname)
     p2 = ('# Predict m6A sites\n'
           '# {sh2} is generated after {sh1}\n'
           'sbatch \\\n'
           '\t--gres={scratch}:10 \\\n\t--time {itime} \\\n'
-          '\t--job-name ipd \\\n'
+          '\t--job-name {job}ipd \\\n'
           '\t{sh2} \n\n').format(
-        scratch=gres, sh1=sfn, itime=ipd_time,
+        scratch=gres, sh1=sfn, itime=ipd_time, job=jobname,
         sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
     log_out = os.path.join(logdir, '{}.merge.out'.format(jobname))
     log_err = os.path.join(logdir, '{}.merge.err'.format(jobname))
@@ -93,8 +93,8 @@ module load samtools''').format(log_out, log_err),
     p3 = ('# Merge Reads\n'
           'sbatch \\\n'
           '\t--mem {mem} \\\n\t--gres={scratch}:1 --time {mtime} \\\n'
-          '\t--cpus-per-task={thread} \\\n\t--time 400 \\\n\t--job-name merge \\\n \t{sh}\n\n').format(
-        sh=mfn, scratch=gres, mem=mem, thread=threads, mtime=merge_time)
+          '\t--cpus-per-task={thread} \\\n\t--time 400 \\\n\t--job-name {job}mer \\\n \t{sh}\n\n').format(
+        sh=mfn, scratch=gres, mem=mem, thread=threads, mtime=merge_time, job=jobname)
 
     with open(pfn, 'w') as filep:
         filep.write(''.join([p1, p2, p3]))
