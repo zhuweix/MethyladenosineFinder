@@ -4,7 +4,7 @@ import pysam
 def filter_subread(bam: str, zmw: str, output: str):
     zmw_list = []
     with open(zmw) as filep:
-        for line in zmw:
+        for line in filep:
             zmw_list.append(int(line.strip()))
     print('{} ZMWs in the ZMW list file'.format(len(zmw_list)))
     zmw_list = set(zmw_list)
