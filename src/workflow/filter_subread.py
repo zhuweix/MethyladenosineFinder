@@ -8,7 +8,7 @@ def filter_subread(bam: str, zmw: str, output: str):
             zmw_list.append(line.strip())
     zmw_list = set(zmw_list)
 
-    with pysam.AlignmentFile(bam, 'rb') as inbam:
+    with pysam.AlignmentFile(bam, 'rb', check_sq=False) as inbam:
         header = inbam.header
         with pysam.AlignmentFile(output, 'wb', header=header) as outbam:
             for read in inbam:

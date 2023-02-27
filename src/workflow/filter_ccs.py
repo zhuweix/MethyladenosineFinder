@@ -4,7 +4,7 @@ import pysam
 
 def filter_ccs(bam: str, min_qual: int, min_cov: int, output: str):
     read_score = {}
-    with pysam.AlignmentFile(bam, 'rb') as inbam:
+    with pysam.AlignmentFile(bam, 'rb', check_sq=False) as inbam:
         for read in inbam:
             zmw = read.query_name[:-4]  # remove /ccs
             quals = read.get_forward_qualities()
