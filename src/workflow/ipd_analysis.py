@@ -233,6 +233,7 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
                                             mod='m6A',
                                             start=start,
                                             end=stop,
+                                            scorecutoffdict=scorecutoffdict,
                                             is_strict=is_strict)
             # Remove tmp file
             cmd = ['rm', tmp_gff]

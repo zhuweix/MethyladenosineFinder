@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import subprocess
 from Bio import SeqIO
 
 
@@ -26,5 +27,7 @@ def index_reference(ref: str, output: str):
         ref_array[name] = tmp
     with open(output, 'wb') as filep:
         pickle.dump(ref_array, filep, protocol=pickle.HIGHEST_PROTOCOL)
+    subprocess.run(['samtools', 'faidx', ref], check=True)
+
 
 
