@@ -16,8 +16,7 @@ def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, 
     if num_jobs % batch != 0:
         num_subjobs += 1
     # generate command
-    content = [r'''
-#!/bin/bash
+    content = [r'''#!/bin/bash
 #SBATCH -o {}
 #SBATCH -e {}
 #SBATCH --cpus-per-task=1
@@ -41,16 +40,16 @@ module load smrtanalysis
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-b', '--bamdir')
-    parser.add_argument('-c', '--coveragecutoff')
-    parser.add_argument('-o', '--outdir')
-    parser.add_argument('-s', '--swarmfile')
-    parser.add_argument('-z', '--zmwfile')
-    parser.add_argument('-m', '--motifmodfile')
-    parser.add_argument('-r', '--reference')
-    parser.add_argument('--scorefn')
-    parser.add_argument('--job')
-    parser.add_argument('--log')
+    parser.add_argument('-b', '--bamdir', required=True)
+    parser.add_argument('-c', '--coveragecutoff', default=3)
+    parser.add_argument('-o', '--outdir', required=True)
+    parser.add_argument('-s', '--swarmfile', required=True)
+    parser.add_argument('-z', '--zmwfile', required=True)
+    parser.add_argument('-m', '--motifmodfile', required=True)
+    parser.add_argument('-r', '--reference', required=True)
+    parser.add_argument('--scorefn', required=True)
+    parser.add_argument('--job', default='maw')
+    parser.add_argument('--log', required=True)
     parser.add_argument('-t', '--timeout', default=600, type=int)
     parser.add_argument('-f', '--is_strict_flag', default=1)
     parser.add_argument('--batch', default=400)

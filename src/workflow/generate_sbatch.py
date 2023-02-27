@@ -2,7 +2,7 @@ import os
 import argparse
 
 
-def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
+def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, score_fn : str,
                     sbatchdir: str, ref: str, mod: str, cov: str, savedir: str, split_time: int, ipd_time: int,
                     merge_time: int, mem: str, logdir: str, threads: int, is_m6A=0, timeout=600):
     if not os.path.isdir(sbatchdir):
@@ -41,11 +41,11 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
                       '\t-b {zmw} \\\n\t-c {cov} \\\n'
                       '\t-o {ipd} \\\n\t-s {sh} \\\n'
                       '\t-m {mod} \\\n\t-z {zlist} \\\n'
-                      '\t-t {timeout} \\\n'
+                      '\t-t {timeout} \\\n\t--scorefn {scorefn} \\\n'
                       '\t--log {log} \\\n'
                       '\t--job {job} \\\n'
                       '\t-r {ref} \\\n\t-f {strict_flag}\n\n').format(
-            gen_py=gen_ipd_py, log=logdir, job=jobname,
+            gen_py=gen_ipd_py, log=logdir, job=jobname, scorefn=score_fn,
             zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd',
             mod=mod, ref=ref, sh=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'),
             zlist=os.path.join(fullprefix + '_zmw', 'zmw.cov.{}.list.txt'.format(cov)),
@@ -60,10 +60,10 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
     p2 = ('# Predict m6A sites\n'
           '# {sh2} is generated after {sh1}\n'
           'sbatch \\\n'
-          '\t--gres={scratch}:1 \\\n\t-p 2 --time {itime} \\\n'
-          '\t--job-name ipd \\\n\t--logdir {logdir} \\\n'
+          '\t--gres={scratch}:10 \\\n\t--time {itime} \\\n'
+          '\t--job-name ipd \\\n'
           '\t{sh2} \n\n').format(
-        scratch=gres, logdir=logdir, sh1=sfn, itime=ipd_time,
+        scratch=gres, sh1=sfn, itime=ipd_time,
         sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
     log_out = os.path.join(logdir, '{}.merge.out'.format(jobname))
     log_err = os.path.join(logdir, '{}.merge.err'.format(jobname))
@@ -71,8 +71,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str,
     mfn = os.path.join(sbatchdir, mfn)
     with open(mfn, 'w') as filep:
         mergebam = [(
-            r'''
-#!/bin/bash
+            r'''#!/bin/bash
 #SBATCH -o {}
 #SBATCH -e {}
 module load samtools''').format(log_out, log_err),

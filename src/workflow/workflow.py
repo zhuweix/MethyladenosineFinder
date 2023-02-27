@@ -25,7 +25,7 @@ def main():
                                                          'Default: 400')
     parser.add_argument('--mem', default='20g', help='Size of memory per cpu. Default 20g')
     parser.add_argument('--gres', default='lscratch', help='Partition for local disk. Default: lscratch')
-    parser.add_argument('--score_fn',default=os.path.join(script_dir, '../asset/default_cov_score.csv'))
+    parser.add_argument('--score_fn',default=os.path.abspath(os.path.join(script_dir, '../asset/default_cov_score.csv')))
     parser.add_argument('-f', '--m6Aonly', default=1, help='1=Only Include m6A sites, 0=All modified As. Default=1')
     parser.add_argument('--timeout', default=600, type=int,
                         help='Maximal Time (s) for single ipdSummary job. Default: 600')
@@ -53,6 +53,7 @@ def main():
         merge_time=args.mergetime,
         is_m6A=args.m6Aonly,
         timeout=args.timeout,
+        score_fn=args.score_fn
         )
 
 

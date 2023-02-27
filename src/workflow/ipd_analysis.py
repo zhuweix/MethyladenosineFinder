@@ -258,13 +258,13 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-b', '--bamfile')
-    parser.add_argument('-o', '--output')
-    parser.add_argument('-r', '--reference')
+    parser.add_argument('-b', '--bamfile', required=True)
+    parser.add_argument('-o', '--output', required=True)
+    parser.add_argument('-r', '--reference', required=True)
     parser.add_argument('-m', '--motifpositionfile')
     parser.add_argument('-f', '--is_m6a', default=1)
-    parser.add_argument('-c', '--coveragecutoff')
-    parser.add_argument('-s', '--scorefn')
+    parser.add_argument('-c', '--coveragecutoff', default=3)
+    parser.add_argument('-s', '--scorefn', required=True)
     parser.add_argument('-t', '--timeout', default=600)
 
     args = parser.parse_args()
