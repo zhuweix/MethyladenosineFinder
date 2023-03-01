@@ -35,11 +35,10 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
                       '\t-o {ipd} \\\n\t-s {sh} \\\n'
                       '\t-m {mod} \\\n\t-z {zlist} \\\n'
                       '\t-t {timeout} \\\n\t--scorefn {scorefn} \\\n'
-                      '\t--log {log} \\\n\t--is_clean {isclean} \\\n'
-                      '\t--job {job} \\\n\t--batch {batch}\\\n'
+                      '\t--is_clean {isclean} \\\n'
                       '\t-r {ref} \\\n\t-f {strict_flag}\n\n').format(
-            gen_py=gen_ipd_py, log=logdir, job=jobname, scorefn=score_fn,
-            zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd', batch=batchsize,
+            gen_py=gen_ipd_py,  scorefn=score_fn,
+            zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd',
             mod=mod, ref=ref, sh=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'),
             zlist=os.path.join(fullprefix + '_zmw', 'zmw.cov.{}.list.txt'.format(cov)),
             cov=cov, strict_flag=is_m6A, timeout=timeout, isclean=is_clean)]
