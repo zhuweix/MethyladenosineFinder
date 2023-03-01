@@ -120,7 +120,9 @@ $ m6aworkflow  \
     --isclean True # Whether to clean most of the tmp files Default=True
 
 # IMPORTANT NOTICE: The number of Batch array jobs submitted to SLURM is [Number of ZMWs] / [BatchSize], very small batchsize will result in a large amount of SLURM jobs
-
+```
+> The sbatch commands are stored in [Prefix].pipeline
+```bash
 # Follow the workflow to submit the batch script
 # The commands are stored in [Prefix].pipeline
 ## Example Pipeline file
@@ -136,6 +138,7 @@ $ sbatch \
 # Predict m6A sites
 # output.ipd_analysis.sh is generated after output.split.sh
 sbatch \
+        --mem 20g \
         --gres=lscratch:10 \
         --time 600 \
         --job-name mawipd \
@@ -146,7 +149,6 @@ sbatch \
         --mem 20g \
         --gres=lscratch:10 --time 100 \
         --cpus-per-task=16 \
-        --time 400 \
         --job-name mawmer \
         [output.merge.sh]
 

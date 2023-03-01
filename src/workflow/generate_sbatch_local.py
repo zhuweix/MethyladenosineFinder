@@ -16,8 +16,6 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
     pfn = os.path.join('./', pfn)
     script_dir = os.path.dirname(os.path.realpath(__file__))
     filter_split_py = os.path.join(script_dir, 'filter_split_zmw.py')
-    log_out = os.path.join(logdir, '{}.split.out'.format(jobname))
-    log_err = os.path.join(logdir, '{}.split.err'.format(jobname))
     with open(sfn, 'w') as filep:
         splitbam = ['''#!/bin/bash''',
                     ('python {split_py} \\\n'
@@ -31,7 +29,7 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
         if not os.path.isdir(savedir):
             os.makedirs(savedir)
 
-        gen_ipd_py = os.path.join(script_dir, 'generate_sbatch_ipd.py')
+        gen_ipd_py = os.path.join(script_dir, 'generate_sbatch_ipd_local.py')
         ipdscript = [('python {gen_py} \\\n'
                       '\t-b {zmw} \\\n\t-c {cov} \\\n'
                       '\t-o {ipd} \\\n\t-s {sh} \\\n'
@@ -72,10 +70,8 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
         filep.write('\n'.join(mergebam))
         filep.write('\n')
     p3 = ('# Merge Reads\n'
-          'sbatch \\\n'
-          '\t--mem {mem} \\\n\t--gres={scratch}:10 --time {mtime} \\\n'
-          '\t--cpus-per-task={thread}  \\\n\t--job-name {job}mer \\\n \t{sh}\n\n').format(
-        sh=mfn, scratch=gres, mem=mem, thread=threads, mtime=merge_time, job=jobname)
+          '{sh}\n\n').format(
+        sh=mfn)
 
     with open(pfn, 'w') as filep:
         filep.write(''.join([p1, p2, p3]))

@@ -42,7 +42,8 @@ setup(
         'console_scripts': [
             'm6aworkflow = workflow.workflow:main',
             'm6apreprocess = workflow.preprocess:main',
-            'm6abamtobed = workflow.bamtobed:main'
+            'm6abamtobed = workflow.bamtobed:main',
+            'm6aworkflowlocal = workflow_local:main'
         ], },
     project_urls={
         "Bug Reports": "https://github.com/zhuweix/MethyladenosineFinder/issues",
