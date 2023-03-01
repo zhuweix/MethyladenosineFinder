@@ -32,8 +32,7 @@ def main():
     parser.add_argument('--splittime', default=600, type=int, help='Time limit to Split Reads (min). Default=600')
     parser.add_argument('--ipdtime', default=600, type=int, help='Time limit to predict m6A sites (min). Default=600')
     parser.add_argument('--mergetime', default=100, type=int, help='Time limit to Merge Reads (min). Default=100')
-    parser.add_argument('--isclean', default=True, help='Whether to remove tmp files. Default=True',
-                        action='store_true')
+    parser.add_argument('--isclean', default=True, help='Whether to remove tmp files. Default=True')
     args = parser.parse_args()
     isclean = args.isclean
     if isinstance(isclean, str):

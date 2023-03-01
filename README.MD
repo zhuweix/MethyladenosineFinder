@@ -180,8 +180,6 @@ $ m6aworkflowlocal  \
     --outputdir [Folder for Output BAM files] \ # Default=./output
     --tmpdir [Folder for Temporary Files] \ # Default=./tmp/
     --coverage [MinCoverage] \ # Default=6
-    --mem [SLURM mem parameter] \ # Default=20g
-    --threads [Threads ONLY for samtools]  \ # Default=16
     --isclean True # Whether to clean most of the tmp files Default=True
 
 ```
