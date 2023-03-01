@@ -31,8 +31,6 @@ setup(
     packages=find_packages(where="src"),
     python_requires=">=3.7, <4",
     install_requires=["numpy",
-                      "scipy",
-                      'pandas',
                       'pysam',
                       'biopython'
                       ],
