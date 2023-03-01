@@ -3,8 +3,7 @@ import argparse
 
 
 def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_clean: bool,
-                    sbatchdir: str, ref: str, mod: str, cov: str, savedir: str,
-                    threads: int, is_m6A=1, timeout=600):
+                    sbatchdir: str, ref: str, mod: str, cov: str, savedir: str, is_m6A=1, timeout=600):
     if not os.path.isdir(sbatchdir):
         os.makedirs(sbatchdir)
     if not os.path.isdir(savedir):
@@ -54,15 +53,14 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
     with open(mfn, 'w') as filep:
         mergebam = [r'''#!/bin/bash''',
             ("find  {ipd} -name '*.bam' > {bamlist} \n"
-             'samtools cat --threads {thread} --no-PG -o {merge} \\\n'
+             'samtools cat --no-PG -o {merge} \\\n'
              '\t-b {bamlist} \\\n'
              'samtools sort -o {sort} \\\n\t {merge} \\\n'
              'samtools index {sort}\n\n').format(
             ipd=fullprefix + '_ipd',
             bamlist=os.path.join(fullprefix + '_ipd', 'bamfile.list'),
             merge=os.path.join(savedir, '{}.merge.bam'.format(prefix)),
-            sort=os.path.join(savedir, '{}.sort.bam'.format(prefix)),
-            thread=threads)]
+            sort=os.path.join(savedir, '{}.sort.bam'.format(prefix)))]
         if is_clean:
             mergebam.append(r"xargs -a {} -d'\n' rm -f".format(os.path.join(fullprefix + '_ipd', 'bamfile.list')))
             mergebam.append(r"rm -f {}".format(os.path.join(savedir, '{}.merge.bam'.format(prefix))))

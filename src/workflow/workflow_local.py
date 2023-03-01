@@ -18,7 +18,6 @@ def main():
     parser.add_argument('-p', '--prefix', default='output', help='Prefix of Output. Default: output')
     parser.add_argument('-s', '--shdir', default='./sh/', help='Folder for sh scripts. Default: ./sh/')
     parser.add_argument('-c', '--coverage', default=6, help='Minimal Subread Coverage. Default: 6')
-    parser.add_argument('-@', '--threads', default=12, help='Threads for samtools. Default: 12')
     parser.add_argument('--scorefn',default=os.path.abspath(os.path.join(script_dir, '../asset/default_cov_score.csv')))
     parser.add_argument('-f', '--m6Aonly', default=1, help='1=Only Include m6A sites, 0=All modified As. Default=1')
     parser.add_argument('--timeout', default=600, type=int,
@@ -42,7 +41,6 @@ def main():
         mod=os.path.abspath(args.index),
         cov=args.coverage,
         savedir=os.path.abspath(args.outputdir),
-        threads=args.threads,
         is_m6A=args.m6Aonly,
         timeout=args.timeout,
         score_fn=os.path.abspath(args.scorefn),
