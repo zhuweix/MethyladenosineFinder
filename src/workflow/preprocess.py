@@ -32,8 +32,8 @@ def main():
 
     args = parser.parse_args()
     if args.command == 'index':
-        ref = args.r
-        output = args.o
+        ref = args.ref
+        output = args.output
         print('Making Reference Dictionary for {}'.format(ref))
         index_reference(ref=ref, output=output)
         print('Finished')

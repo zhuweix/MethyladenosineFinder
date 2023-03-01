@@ -34,7 +34,12 @@ $ git clone https://github.com/zhuweix/MethyladenosineFinder.git
 
 # Install dependencies using Conda (Except SMRTLink)
 # For SMRTLink installation, please follow the documentation on PacBio website (https://www.pacb.com/support/software-downloads/)
-
+# Optional: use new conda environment to manage python packages
+$ conda create --name maw python=3.7
+$ conda activate maw
+ 
+# Install dependencies
+$ conda install numpy
 $ conda install -c bioconda pysam biopython samtools
 
 # Go into the repository
@@ -46,28 +51,28 @@ $ python setup.py setup
 ```bash
 # prepare reference index
 $ m6apreprocess index \
-$     --r [Reference.FASTA] \
-$     --output [Reference_index.data]
+     -r [Reference.FASTA] \
+     -o [Reference_index.data]
 
 # Recommended: Filter the Subreads using the PacBio CCS reads
 # Get ZMW list by num_pass and AverageQual in PacBio CCS reads
 $ m6apreprocess zmwfromccs \
-$     --bam [PacBio_CCS.bam] \
-$     --output [ZMW_list.txt] \
-$     --qual [Min_AveQual, Default=90] \
-$     --cov [Min_NumPass, Default=3]
+     --bam [PacBio_CCS.bam] \
+     --output [ZMW_list.txt] \
+     --qual [Min_AveQual, Default=90] \
+     --cov [Min_NumPass, Default=3]
 # Filter subreads using the ZMW list (alternatively, bamsieve tool from PacBio SMRT Tools could also be used)
 $ m6apreprocess filtersubreads \
-$     --bam [PacBio_Subreads.bam] \
-$     --zmw [ZMW_list.txt] \
-$     --output [Filtered_Subreads.bam]   
+     --bam [PacBio_Subreads.bam] \
+     --zmw [ZMW_list.txt] \
+     --output [Filtered_Subreads.bam]   
 
 # Align the Subreads to Reference using pbmm2 from SMRT Tools
 $ pbmm2 index [Reference.FASTA] [Reference.mmi]
 $ pbmm2 align [Reference.mmi] [PacBio_Subreads.bam | Filtered_Subreads.bam] \
-$     [Output_Aligned_Sorted_Subreads.bam] --preset SUBREAD --sort \
-$     -j 16 [Threads for alignment] \
-$     -J 8 [Threads for sorting]
+     [Output_Aligned_Sorted_Subreads.bam] --preset SUBREAD --sort \
+     -j 16 [Threads for alignment] \
+     -J 8 [Threads for sorting]
 # index the aligned bam file using pbindex from SMRT Tools
 $ pbindex [Output_Aligned_Sorted_Subreads.bam]
 $ samtools index [Output_Aligned_Sorted_Subreads.bam]
