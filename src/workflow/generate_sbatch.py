@@ -60,7 +60,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
     p2 = ('# Predict m6A sites\n'
           '# {sh2} is generated after {sh1}\n'
           'sbatch \\\n'
-          '\t--mem {mem}\\\n \t--gres={scratch}:10 \\\n\t--time {itime} \\\n'
+          '\t--mem {mem} \\\n \t--gres={scratch}:10 \\\n\t--time {itime} \\\n'
           '\t--job-name {job}ipd \\\n'
           '\t{sh2} \n\n').format(
         scratch=gres, sh1=sfn, itime=ipd_time, job=jobname, mem=mem,
