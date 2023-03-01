@@ -45,10 +45,10 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
         filep.write('\n'.join(ipdscript))
 
     p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!\n'
-          '{sh1} \n\n').format(sh1=sfn)
+          'bash\t{sh1} \n\n').format(sh1=sfn)
     p2 = ('# Predict m6A sites\n'
           '# {sh2} is generated after {sh1}\n'
-          '\t{sh2} \n\n').format(sh1=sfn, sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
+          'bash\t{sh2} \n\n').format(sh1=sfn, sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
     mfn = '{}.merge.sh'.format(prefix)
     mfn = os.path.join(sbatchdir, mfn)
     with open(mfn, 'w') as filep:
@@ -69,7 +69,7 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
         filep.write('\n'.join(mergebam))
         filep.write('\n')
     p3 = ('# Merge Reads\n'
-          '{sh}\n\n').format(
+          'bash {sh}\n\n').format(
         sh=mfn)
 
     with open(pfn, 'w') as filep:

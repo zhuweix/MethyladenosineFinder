@@ -164,6 +164,27 @@ $ m6abamtobed --bam [m6A_sites.BAM] --bed [m6A_sites.bed]
 > and because the last Block must end in the end of read. Since we are using blocks to
 > indicate m6A sites. We have to add False Pseudo Sites in the beginning or in the end of the read.
 
+### [Experimental] Predict m6A sites locally
+```bash
+# Most of the parameters are similar with the SLURM version
+$ m6aworkflowlocal  \
+    --bam [AlignedSubreads.bam | FilteredAlignedSubreads.bam] \
+    --ref [Reference.FASTA] \
+    --index [Reference_index.data] \ # Indexed Reference for Adenine locations, see preprocess
+    [Optional parameters]
+    --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=ouput    
+    --scorefn [CSV for for pvalue threshold] \ # Default=src/asset/default_cov_score.csv
+    --timeout [Timelimit (s) to predict m6A sites for one concensus read] \ # Default=600
+    --sbatchdir [Folder for SBATCH files for SLURM submission] \  # Default=./sh 
+    --outputdir [Folder for Output BAM files] \ # Default=./output
+    --tmpdir [Folder for Temporary Files] \ # Default=./tmp/
+    --coverage [MinCoverage] \ # Default=6
+    --mem [SLURM mem parameter] \ # Default=20g
+    --threads [Threads ONLY for samtools]  \ # Default=16
+    --isclean True # Whether to clean most of the tmp files Default=True
+
+```
+
 ## Input File Format
 * BAM file of PacBio subreads aligned to the reference genome
     - We tested our pipeline with the aligned BAM file using pbalign for SMRTLINK
