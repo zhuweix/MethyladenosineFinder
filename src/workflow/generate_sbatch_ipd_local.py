@@ -47,7 +47,6 @@ if __name__ == "__main__":
         swarmfile=args.swarmfile,
         zmwfile=args.zmwfile,
         outdir=args.outdir,
-        job=args.job,
         motifmodfile=args.motifmodfile,
         reference=args.reference,
         is_strict=args.is_strict_flag,
