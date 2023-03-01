@@ -47,7 +47,7 @@ def main():
     parser.add_argument('--bed', help='Output BED file', required=True, type=str)
     args = parser.parse_args()
     m6a_bam_to_bed(
-        bam=args.bam,
+        fn=args.bam,
         bed=args.bed
     )
 

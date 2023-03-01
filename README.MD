@@ -13,6 +13,21 @@ This program predicts single-molecule
   <a href="#contact">Contact</a> 
 </p>
 
+## Example Output File in IGV
+![image](./src/asset/example_m6a.png)
+> Detailed specifications in Output File Format
+> 
+> BAM Output: The m6A sites are indicated as insertion sites (purple "I').
+> 
+> BED Format: Each line represented one consensus read. 
+> Each block represented 1 m6A site
+> 
+> Note: BED file requires that the first Block starts in the beginning of the read,
+> and that the last Block ends in the end of the read. However, we used the blocks for 
+> m6A sites that cannot statisfy such requirement. IGV could still view the BED files 
+> (while UCSC cannot), but the read before the first and last m6A site
+> is not shown in IGV.
+
 
 ## Key Features
 
@@ -85,15 +100,24 @@ $ m6aworkflow  \
     --bam [AlignedSubreads.bam | FilteredAlignedSubreads.bam] \
     --ref [Reference.FASTA] \
     --index [Reference_index.data] \ # Indexed Reference for Adenine locations, see preprocess
+    [Optional parameters]
+    --scorefn [CSV for for pvalue threshold] \ # Default=src/asset/default_cov_score.csv
+    --splittime [Timelimit (min) to split BAM file by ZMW] \ # Default=600
+    --ipdtime [Timelimit (min) to predict m6a sites] \ # Default=600
+    --mergetime [Timelimit (min) to Merge bam files and to generate final output] \ # Default=100
+    --timeout [Timelimit (s) to predict m6A sites for one concensus read] \ # Default=600
     --sbatchdir [Folder for SBATCH files for SLURM submission] \  # Default=./sh 
     --outputdir [Folder for Output BAM files] \ # Default=./output
     --tmpdir [Folder for Temporary Files] \ # Default=./tmp/
+    --logdir [Folder for Log Files] \ # Default=./log/
     --jobname [JobName For Slurm] \ # Default=maw
     --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=ouput
-    --cov [MinCoverage] \ # Default=6
-    --batchsize [BatchSize] \# Number of ZMWs per SLURM array job; Default=500
-    --thread [Threads]  \ # Default=16
-    --is_clean True # Whether to clean most of the tmp files Default=True
+    --coverage [MinCoverage] \ # Default=6
+    --mem [SLURM mem parameter] \ # Default=20g
+    --gres [SLURM GRES parameter for local scratch space] \ # Default=lscratch
+    --ipdbatch [BatchSize] \# Number of ZMWs per SLURM array job; Default=500
+    --threads [Threads ONLY for samtools]  \ # Default=16
+    --isclean True # Whether to clean most of the tmp files Default=True
 
 # IMPORTANT NOTICE: The number of Batch array jobs submitted to SLURM is [Number of ZMWs] / [BatchSize], very small batchsize will result in a large amount of SLURM jobs
 
@@ -105,7 +129,7 @@ $ m6aworkflow  \
 sbatch \
         --mem 20g \
         --gres=lscratch:40 \
-        --job-name corsplit \
+        --job-name mawsplit \
         --time 600  \
        [output.split.sh] 
 
@@ -114,7 +138,7 @@ sbatch \
 sbatch \
         --gres=lscratch:10 \
         --time 600 \
-        --job-name ipd \
+        --job-name mawipd \
         [output.ipd_analysis.sh] 
 
 # Merge Reads
@@ -123,7 +147,7 @@ sbatch \
         --gres=lscratch:10 --time 100 \
         --cpus-per-task=16 \
         --time 400 \
-        --job-name merge \
+        --job-name mawmer \
         [output.merge.sh]
 
 # [Optional] Transform BAM file to BED file for m6A sites
