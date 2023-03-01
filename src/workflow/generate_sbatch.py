@@ -92,7 +92,7 @@ module load samtools''').format(log_out, log_err),
         filep.write('\n')
     p3 = ('# Merge Reads\n'
           'sbatch \\\n'
-          '\t--mem {mem} \\\n\t--gres={scratch}:1 --time {mtime} \\\n'
+          '\t--mem {mem} \\\n\t--gres={scratch}:10 --time {mtime} \\\n'
           '\t--cpus-per-task={thread} \\\n\t--time 400 \\\n\t--job-name {job}mer \\\n \t{sh}\n\n').format(
         sh=mfn, scratch=gres, mem=mem, thread=threads, mtime=merge_time, job=jobname)
 

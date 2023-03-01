@@ -24,7 +24,7 @@ def main():
     parser.add_argument('--ipdbatch', default=400, help='Number of subjobs per batch for ipdsummary'
                                                          'Default: 400')
     parser.add_argument('--mem', default='20g', help='Size of memory per cpu. Default 20g')
-    parser.add_argument('--gres', default='lscratch', help='Partition for local disk. Default: lscratch')
+    parser.add_argument('--gres', default='lscratch', help='local disk for SLURM gres option. Default: lscratch')
     parser.add_argument('--scorefn',default=os.path.abspath(os.path.join(script_dir, '../asset/default_cov_score.csv')))
     parser.add_argument('-f', '--m6Aonly', default=1, help='1=Only Include m6A sites, 0=All modified As. Default=1')
     parser.add_argument('--timeout', default=600, type=int,

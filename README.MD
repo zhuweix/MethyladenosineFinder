@@ -89,8 +89,8 @@ $ m6aworkflow  \
     --outputdir [Folder for Output BAM files] \ # Default=./output
     --tmpdir [Folder for Temporary Files] \ # Default=./tmp/
     --jobname [JobName For Slurm] \ # Default=maw
-    --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=SMF
-    --cov [MinCoverage] \ # Default=8
+    --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=ouput
+    --cov [MinCoverage] \ # Default=6
     --batchsize [BatchSize] \# Number of ZMWs per SLURM array job; Default=500
     --thread [Threads]  \ # Default=16
     --is_clean True # Whether to clean most of the tmp files Default=True
