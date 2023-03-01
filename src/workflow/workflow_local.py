@@ -23,10 +23,15 @@ def main():
     parser.add_argument('-f', '--m6Aonly', default=1, help='1=Only Include m6A sites, 0=All modified As. Default=1')
     parser.add_argument('--timeout', default=600, type=int,
                         help='Maximal Time (s) for single ipdSummary job. Default: 600')
-    parser.add_argument('--isclean', default=True, help='Whether to remove tmp files. Default=True',
-                        action='store_true')
+    parser.add_argument('--isclean', default=True, help='Whether to remove tmp files. Default=True',)
     args = parser.parse_args()
-
+    if isinstance(str, args.isclean):
+        isclean = args.isclean.lower()
+        isclean = isclean.capitcalize()
+        if isclean[0] in ['T', 'F']:
+            isclean = eval(isclean)
+        else:
+            isclean = int(isclean) > 0
     generate_sbatch_local(
         bam=os.path.abspath(args.bamfile),
         out=os.path.abspath(args.tmpdir),
@@ -40,7 +45,7 @@ def main():
         is_m6A=args.m6Aonly,
         timeout=args.timeout,
         score_fn=os.path.abspath(args.scorefn),
-        is_clean=args.isclean
+        is_clean=isclean
         )
 
 

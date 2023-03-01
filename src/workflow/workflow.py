@@ -35,7 +35,13 @@ def main():
     parser.add_argument('--isclean', default=True, help='Whether to remove tmp files. Default=True',
                         action='store_true')
     args = parser.parse_args()
-
+    if isinstance(str, args.isclean):
+        isclean = args.isclean.lower()
+        isclean = isclean.capitcalize()
+        if isclean[0] in ['T', 'F']:
+            isclean = eval(isclean)
+        else:
+            isclean = int(isclean) > 0
     generate_sbatch(
         bam=os.path.abspath(args.bamfile),
         out=os.path.abspath(args.tmpdir),
@@ -57,7 +63,7 @@ def main():
         timeout=args.timeout,
         score_fn=os.path.abspath(args.scorefn),
         batchsize=args.ipdbatch,
-        is_clean=args.isclean
+        is_clean=isclean
         )
 
 
