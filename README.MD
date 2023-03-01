@@ -39,7 +39,8 @@ This program predicts single-molecule
 ## How To Use
 To clone and run this application on slurm cluster, you'll need [SMRTLINK](https://www.pacb.com/support/software-downloads/) deployed on SLURM cluster; [pysam](https://pysam.readthedocs.io/), [Biopython](https://biopython.org/) and [samtools](http://www.htslib.org/) are also required.
 
-  [Installation](#Installation) • [Preprocess](#Preprocess) • [Predict m6A sites](#predict-m6a-sites)
+  [Installation](#Installation) • [Preprocess](#Preprocess) • [Predict m6A sites](#predict-m6a-sites) •
+ [m6A Prediction on local machine (Experimental)](#experimental-predict-m6a-sites-locally)
 
 
 ### Installation
@@ -175,7 +176,7 @@ $ m6aworkflowlocal  \
     --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=ouput    
     --scorefn [CSV for for pvalue threshold] \ # Default=src/asset/default_cov_score.csv
     --timeout [Timelimit (s) to predict m6A sites for one concensus read] \ # Default=600
-    --sbatchdir [Folder for SBATCH files for SLURM submission] \  # Default=./sh 
+    --shdir [Folder for SH files for SLURM submission] \  # Default=./sh 
     --outputdir [Folder for Output BAM files] \ # Default=./output
     --tmpdir [Folder for Temporary Files] \ # Default=./tmp/
     --coverage [MinCoverage] \ # Default=6

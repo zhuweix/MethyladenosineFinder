@@ -53,10 +53,10 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
     mfn = os.path.join(sbatchdir, mfn)
     with open(mfn, 'w') as filep:
         mergebam = [r'''#!/bin/bash''',
-            ("find  {ipd} -name '*.bam' > {bamlist} ; \\\n"
+            ("find  {ipd} -name '*.bam' > {bamlist} \\\n"
              '\tsamtools cat --threads {thread} --no-PG -o {merge} \\\n'
-             '\t-b {bamlist} ; \\\n'
-             'samtools sort -o {sort} \\\n\t {merge} ; \\\n'
+             '\t-b {bamlist} \\\n'
+             'samtools sort -o {sort} \\\n\t {merge} \\\n'
              'samtools index {sort}\n\n').format(
             ipd=fullprefix + '_ipd',
             bamlist=os.path.join(fullprefix + '_ipd', 'bamfile.list'),
