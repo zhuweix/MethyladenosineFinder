@@ -32,7 +32,8 @@ def main():
     parser.add_argument('--splittime', default=600, type=int, help='Time limit to Split Reads (min). Default=600')
     parser.add_argument('--ipdtime', default=600, type=int, help='Time limit to predict m6A sites (min). Default=600')
     parser.add_argument('--mergetime', default=100, type=int, help='Time limit to Merge Reads (min). Default=100')
-    parser.add_argument('--isclean', default=True, type=bool, help='Whether to remove tmp files. Default=True')
+    parser.add_argument('--isclean', default=True, type=bool, help='Whether to remove tmp files. Default=True',
+                        action='store_true')
     args = parser.parse_args()
 
     generate_sbatch(
