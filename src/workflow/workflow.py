@@ -37,7 +37,7 @@ def main():
     args = parser.parse_args()
     if isinstance(args.isclean, str):
         isclean = args.isclean.lower()
-        isclean = isclean.capitcalize()
+        isclean = isclean.capitalize()
         if isclean[0] in ['T', 'F']:
             isclean = eval(isclean)
         else:
