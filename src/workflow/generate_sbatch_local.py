@@ -69,7 +69,7 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
         filep.write('\n'.join(mergebam))
         filep.write('\n')
     p3 = ('# Merge Reads\n'
-          'bash {sh}\n\n').format(
+          'bash\t{sh}\n\n').format(
         sh=mfn)
 
     with open(pfn, 'w') as filep:
