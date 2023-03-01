@@ -25,7 +25,7 @@ def main():
                         help='Maximal Time (s) for single ipdSummary job. Default: 600')
     parser.add_argument('--isclean', default=True, help='Whether to remove tmp files. Default=True',)
     args = parser.parse_args()
-    if isinstance(str, args.isclean):
+    if isinstance(args.isclean, str):
         isclean = args.isclean.lower()
         isclean = isclean.capitcalize()
         if isclean[0] in ['T', 'F']:

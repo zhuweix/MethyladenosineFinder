@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--isclean', default=True, help='Whether to remove tmp files. Default=True',
                         action='store_true')
     args = parser.parse_args()
-    if isinstance(str, args.isclean):
+    if isinstance(args.isclean, str):
         isclean = args.isclean.lower()
         isclean = isclean.capitcalize()
         if isclean[0] in ['T', 'F']:
