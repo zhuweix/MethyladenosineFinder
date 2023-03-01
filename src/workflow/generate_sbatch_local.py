@@ -48,7 +48,7 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
           '{sh1} \n\n').format(sh1=sfn)
     p2 = ('# Predict m6A sites\n'
           '# {sh2} is generated after {sh1}\n'
-          '\t{sh2} \n\n').format(sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
+          '\t{sh2} \n\n').format(sh1=sfn, sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
     mfn = '{}.merge.sh'.format(prefix)
     mfn = os.path.join(sbatchdir, mfn)
     with open(mfn, 'w') as filep:
