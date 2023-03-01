@@ -45,9 +45,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--bam', help='BAM File to be converted',required=True, type=str)
     parser.add_argument('--bed', help='Output BED file', required=True, type=str)
+    args = parser.parse_args()
     m6a_bam_to_bed(
-        bam=bam,
-        bed=bed
+        bam=args.bam,
+        bed=args.bed
     )
 
 

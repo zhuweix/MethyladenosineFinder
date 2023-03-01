@@ -122,11 +122,16 @@ sbatch \
         [output.merge.sh]
 
 # [Optional] Transform BAM file to BED file for m6A sites
-
-
+$ m6abamtobed --bam [m6A_sites.BAM] --bed [m6A_sites.bed]
 ```
 > **Note**
-> The current workflow is tested with SMRTLink/11.1.0.166339 
+> 
+> The current workflow is tested with SMRTLink/11.1.0.166339
+> 
+> The BED Output is only valid for IGV viewer, not for UCSC browser.
+> This is because the first Block in BED format must start in beginning of the reads
+> and because the last Block must end in the end of read. Since we are using blocks to
+> indicate m6A sites. We have to add False Pseudo Sites in the beginning or in the end of the read.
 
 ## Input File Format
 * BAM file of PacBio subreads aligned to the reference genome
@@ -155,7 +160,22 @@ This format is ready for IGV viewer. The methyladenosine sites are indicated as 
 
 * BED format
 
-This format is easy for further downstream analyze. Each line represents the consensus methyladenosine sites from one ZMW. The name of each line is {movieName}/{holeNumber}/ which is the same in PacBio BAM file. For subreads within one ZMW that aligned to multiple genome locations, the name of the associated line is {movieName}/{holeNumber}/{Number} where Numer=1,2,3... for each location.
+This format is easy for further downstream analyze. 
+Each line represents the consensus methyladenosine sites from one ZMW. 
+The name of each line is the same in PacBio BAM file.
+The ChromStart and ChromEnd is the 
+
+> Note
+> 
+> 
+> For subreads within one ZMW that aligned to multiple 
+genome locations, the name of the associated line is 
+{movieName}/{holeNumber}/{Number} where Numer=1,2,3... 
+for each location (currently, we only support multiple alignments 
+within the same chromosome/reference, for reads with alignments
+in multiple chromosomes/references, the chromosome with highest
+alignment is used).
+> 
 
 
 

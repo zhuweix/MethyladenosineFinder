@@ -27,7 +27,7 @@ setup(
     ],
     keywords="methyladenosine, methylated adenine, PacBio, computational biology",
     package_dir={"": "src",},
-    package_data={"src": ["asset/*.data"]},
+    package_data={"src": ["asset/*.data", "asset/*.csv"]},
     packages=find_packages(where="src"),
     python_requires=">=3.7, <4",
     install_requires=["numpy",
@@ -41,9 +41,9 @@ setup(
     entry_points={
         'console_scripts': [
             'm6aworkflow = workflow.workflow:main',
-            'm6apreprocess = workflow.preprocess:main'
+            'm6apreprocess = workflow.preprocess:main',
             'm6abamtobed = workflow.bamtobed:main'
-        ],},
+        ], },
     project_urls={
         "Bug Reports": "https://github.com/zhuweix/MethyladenosineFinder/issues",
         "Source": "https://github.com/zhuweix/MethyladenosineFinder",
