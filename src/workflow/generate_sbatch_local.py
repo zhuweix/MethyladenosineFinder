@@ -45,7 +45,7 @@ def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_cl
         filep.write('\n'.join(ipdscript))
 
     p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!\n'
-          '{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem, stime=split_time, job=jobname)
+          '{sh1} \n\n').format(sh1=sfn)
     p2 = ('# Predict m6A sites\n'
           '# {sh2} is generated after {sh1}\n'
           '\t{sh2} \n\n').format(sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
