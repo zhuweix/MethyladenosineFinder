@@ -60,7 +60,7 @@ $ conda install -c bioconda pysam biopython samtools
 # Go into the repository
 $ cd MethyladenosineFinder
 # setup the python package
-$ python setup.py setup
+$ python setup.py install
 ```
 ### Preprocess
 ```bash
@@ -77,7 +77,7 @@ $ m6apreprocess zmwfromccs \
      --qual [Min_AveQual, Default=90] \
      --cov [Min_NumPass, Default=3]
 # Filter subreads using the ZMW list (alternatively, bamsieve tool from PacBio SMRT Tools could also be used)
-$ m6apreprocess filtersubreads \
+$ m6apreprocess filtersubread \
      --bam [PacBio_Subreads.bam] \
      --zmw [ZMW_list.txt] \
      --output [Filtered_Subreads.bam]   
@@ -101,6 +101,7 @@ $ m6aworkflow  \
     --ref [Reference.FASTA] \
     --index [Reference_index.data] \ # Indexed Reference for Adenine locations, see preprocess
     [Optional parameters]
+    --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=ouput    
     --scorefn [CSV for for pvalue threshold] \ # Default=src/asset/default_cov_score.csv
     --splittime [Timelimit (min) to split BAM file by ZMW] \ # Default=600
     --ipdtime [Timelimit (min) to predict m6a sites] \ # Default=600
@@ -111,7 +112,6 @@ $ m6aworkflow  \
     --tmpdir [Folder for Temporary Files] \ # Default=./tmp/
     --logdir [Folder for Log Files] \ # Default=./log/
     --jobname [JobName For Slurm] \ # Default=maw
-    --prefix [Prefix] \ # Prefix of the sbatch files and output files; Default=ouput
     --coverage [MinCoverage] \ # Default=6
     --mem [SLURM mem parameter] \ # Default=20g
     --gres [SLURM GRES parameter for local scratch space] \ # Default=lscratch
@@ -126,12 +126,12 @@ $ m6aworkflow  \
 ## Example Pipeline file
 ## The sbatch parameters are in the 
 # Split Subreads by ZMW: Large Number of Files will be generated!
-sbatch \
-        --mem 20g \
-        --gres=lscratch:40 \
-        --job-name mawsplit \
-        --time 600  \
-       [output.split.sh] 
+$ sbatch \
+	--mem 20g \
+	--gres=lscratch:40 \
+	--job-name mawsplit \
+	--time 600  \
+    [output.split.sh] 
 
 # Predict m6A sites
 # output.ipd_analysis.sh is generated after output.split.sh

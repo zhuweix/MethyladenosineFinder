@@ -2,13 +2,11 @@ import os
 import argparse
 
 
-def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, score_fn : str, is_clean: bool,
-                    sbatchdir: str, ref: str, mod: str, cov: str, savedir: str, split_time: int, ipd_time: int,
-                    merge_time: int, mem: str, logdir: str, threads: int, batchsize: int, is_m6A=0, timeout=600):
+def generate_sbatch_local(bam: str, out: str, prefix: str, score_fn : str, is_clean: bool,
+                    sbatchdir: str, ref: str, mod: str, cov: str, savedir: str,
+                    threads: int, is_m6A=1, timeout=600):
     if not os.path.isdir(sbatchdir):
         os.makedirs(sbatchdir)
-    if not os.path.isdir(logdir):
-        os.makedirs(logdir)
     if not os.path.isdir(savedir):
         os.makedirs(savedir)
     sfn = '{}.split.sh'.format(prefix)
@@ -21,9 +19,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
     log_out = os.path.join(logdir, '{}.split.out'.format(jobname))
     log_err = os.path.join(logdir, '{}.split.err'.format(jobname))
     with open(sfn, 'w') as filep:
-        splitbam = [('''#!/bin/bash
-#SBATCH -o {}
-#SBATCH -e {}''').format(log_out, log_err),
+        splitbam = ['''#!/bin/bash''',
                     ('python {split_py} \\\n'
                     '\t-b {sort} \\\n\t-c {cov} \\\n\t-o {zmw} ; \\\n').format(
             split_py=filter_split_py, sort=bam, zmw=fullprefix + '_zmw', cov=cov)]
@@ -34,8 +30,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
             os.makedirs(fullprefix + '_ipd')
         if not os.path.isdir(savedir):
             os.makedirs(savedir)
-        log_out = os.path.join(logdir, '{}.gen_ipd.out'.format(jobname))
-        log_err = os.path.join(logdir, '{}.gen_ipd.err'.format(jobname))
+
         gen_ipd_py = os.path.join(script_dir, 'generate_sbatch_ipd.py')
         ipdscript = [('python {gen_py} \\\n'
                       '\t-b {zmw} \\\n\t-c {cov} \\\n'
@@ -53,28 +48,14 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
         filep.write('\n'.join(ipdscript))
 
     p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!\n'
-          'sbatch \\\n'
-          '\t--mem {mem} \\\n\t--gres={scratch}:40 \\\n'
-          '\t--job-name {job}split \\\n\t--time {stime}  \\\n'
-          '\t{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem, stime=split_time, job=jobname)
+          '{sh1} \n\n').format(sh1=sfn, scratch=gres, mem=mem, stime=split_time, job=jobname)
     p2 = ('# Predict m6A sites\n'
           '# {sh2} is generated after {sh1}\n'
-          'sbatch \\\n'
-          '\t--mem {mem}\\\n \t--gres={scratch}:10 \\\n\t--time {itime} \\\n'
-          '\t--job-name {job}ipd \\\n'
-          '\t{sh2} \n\n').format(
-        scratch=gres, sh1=sfn, itime=ipd_time, job=jobname, mem=mem,
-        sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
-    log_out = os.path.join(logdir, '{}.merge.out'.format(jobname))
-    log_err = os.path.join(logdir, '{}.merge.err'.format(jobname))
+          '\t{sh2} \n\n').format(sh2=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'))
     mfn = '{}.merge.sh'.format(prefix)
     mfn = os.path.join(sbatchdir, mfn)
     with open(mfn, 'w') as filep:
-        mergebam = [(
-            r'''#!/bin/bash
-#SBATCH -o {}
-#SBATCH -e {}
-module load samtools''').format(log_out, log_err),
+        mergebam = [r'''#!/bin/bash''',
             ("find  {ipd} -name '*.bam' > {bamlist} ; \\\n"
              '\tsamtools cat --threads {thread} --no-PG -o {merge} \\\n'
              '\t-b {bamlist} ; \\\n'

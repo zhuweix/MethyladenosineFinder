@@ -1,6 +1,6 @@
 import argparse
 import os
-from .generate_sbatch import generate_sbatch
+from .generate_sbatch_local import generate_sbatch_local
 
 
 def main():
@@ -16,46 +16,29 @@ def main():
                         help='Folder for Tmp files. Default: ./tmp '
                              '(Caution: Large Number of Files will be generated.)')
     parser.add_argument('-p', '--prefix', default='output', help='Prefix of Output. Default: output')
-    parser.add_argument('-s', '--sbatchdir', default='./sh/', help='Folder for sbatch scripts. Default: ./sh/')
-    parser.add_argument('-l', '--logdir', default='./log/', help='Log Folder. Default: ./log/')
-    parser.add_argument('--jobname', default='maw', help='Job prefix. Default: maw')
+    parser.add_argument('-s', '--shdir', default='./sh/', help='Folder for sh scripts. Default: ./sh/')
     parser.add_argument('-c', '--coverage', default=6, help='Minimal Subread Coverage. Default: 6')
     parser.add_argument('-@', '--threads', default=12, help='Threads for samtools. Default: 12')
-    parser.add_argument('--ipdbatch', default=200, help='Number of subjobs per batch for ipdsummary'
-                                                         'Default: 200')
-    parser.add_argument('--mem', default='20g', help='Size of memory per cpu. Default 20g')
-    parser.add_argument('--gres', default='lscratch', help='local disk for SLURM gres option. Default: lscratch')
     parser.add_argument('--scorefn',default=os.path.abspath(os.path.join(script_dir, '../asset/default_cov_score.csv')))
     parser.add_argument('-f', '--m6Aonly', default=1, help='1=Only Include m6A sites, 0=All modified As. Default=1')
     parser.add_argument('--timeout', default=600, type=int,
                         help='Maximal Time (s) for single ipdSummary job. Default: 600')
-    parser.add_argument('--splittime', default=600, type=int, help='Time limit to Split Reads (min). Default=600')
-    parser.add_argument('--ipdtime', default=600, type=int, help='Time limit to predict m6A sites (min). Default=600')
-    parser.add_argument('--mergetime', default=100, type=int, help='Time limit to Merge Reads (min). Default=100')
     parser.add_argument('--isclean', default=True, type=bool, help='Whether to remove tmp files. Default=True')
     args = parser.parse_args()
 
-    generate_sbatch(
+    generate_sbatch_local(
         bam=os.path.abspath(args.bamfile),
         out=os.path.abspath(args.tmpdir),
         prefix=args.prefix,
-        sbatchdir=os.path.abspath(args.sbatchdir),
-        logdir=os.path.abspath(args.logdir),
+        sbatchdir=os.path.abspath(args.shdir),
         ref=os.path.abspath(args.ref),
-        mem=args.mem,
-        jobname=args.jobname,
         mod=os.path.abspath(args.index),
         cov=args.coverage,
-        gres=args.gres,
         savedir=os.path.abspath(args.outputdir),
         threads=args.threads,
-        split_time=args.splittime,
-        ipd_time=args.ipdtime,
-        merge_time=args.mergetime,
         is_m6A=args.m6Aonly,
         timeout=args.timeout,
         score_fn=os.path.abspath(args.scorefn),
-        batchsize=args.ipdbatch,
         is_clean=args.isclean
         )
 
