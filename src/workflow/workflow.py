@@ -60,14 +60,5 @@ def main():
         )
 
 
-def workflow_csv(parameter_fn: str):
-    params = {}
-    with open(parameter_fn) as filep:
-        for line in filep:
-            ent = line.split(',')
-            if ent[0].lower() == 'bam':
-                params['bam'] = ent[1].strip()
-
-
 if __name__ == "__main__":
     main()

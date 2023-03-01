@@ -121,8 +121,6 @@ sbatch \
         --job-name merge \
         [output.merge.sh]
 
-# Clean up the tmp Files
-
 # [Optional] Transform BAM file to BED file for m6A sites
 
 
