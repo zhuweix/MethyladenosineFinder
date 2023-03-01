@@ -23,7 +23,7 @@ def main():
     parser.add_argument('-f', '--m6Aonly', default=1, help='1=Only Include m6A sites, 0=All modified As. Default=1')
     parser.add_argument('--timeout', default=600, type=int,
                         help='Maximal Time (s) for single ipdSummary job. Default: 600')
-    parser.add_argument('--isclean', default=True, type=bool, help='Whether to remove tmp files. Default=True',
+    parser.add_argument('--isclean', default=True, help='Whether to remove tmp files. Default=True',
                         action='store_true')
     args = parser.parse_args()
 
