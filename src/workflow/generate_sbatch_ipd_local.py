@@ -16,6 +16,9 @@ def generate_sbatch_ipd_local(bamdir: str, swarmfile: str, zmwfile: str, outdir:
     content = [r'''#!/bin/bash''']
     script_fn = os.path.abspath(os.path.join(script_dir, 'ipd_analysis.py'))
     for zmw in zmw_list:
+        if not os.path.isfile('{}/tmp.{}.bam'.format(bamdir, zmw)):
+            continue
+        content.append('pbindex {}/tmp.{}.bam'.format(bamdir, zmw))
         content.append('python '
                        '{} '
                        '-b {}/tmp.{}.bam -o {} -m {} -r {} -c {} -f {} -t {} -s {} --is_clean {}'.format(

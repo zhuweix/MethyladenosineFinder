@@ -65,12 +65,16 @@ def filter_split_zmw(bamfile: str, coveragecutoff: int, outdir: str):
                     tmp_reads = tmp_dict[chrom]
                     if len(tmp_reads) < coveragecutoff:
                         continue
-                    filter_ZMWholes.append(holeNumber)
+                    
                     with pysam.AlignmentFile('{}/tmp.{}.bam'.format(outdir, holeNumber), 'wb', header=bam.header) as outbam:
                         for (_, _, read2) in tmp_reads:
                             outbam.write(read2)
                             del read2
+                
+                    if os.path.isfile('{}/tmp.{}.bam'.format(outdir, holeNumber)):
+                        filter_ZMWholes.append(holeNumber)
                         count += 1
+                        
                     del zmw_read[holeNumber]
     print('{} ZMWs counted'.format(len(filter_ZMWholes)))
     if not os.path.isdir(outdir):

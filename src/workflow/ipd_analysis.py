@@ -107,6 +107,10 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
     with open(motifpositionfile, 'rb') as filep:
         motifpositiondict = pickle.load(filep)
 
+    if not os.path.exists(bamfile):
+        print(f'{bamfile} not found')
+        return
+    
     if not os.path.isdir(output):
         os.mkdir(output)
 
@@ -133,6 +137,7 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
             read_header = read.header
 
         if not count_depth:
+            print(f'No reads in {bamfile}')
             return
 
         if len(count_depth) > 1:
@@ -142,6 +147,7 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
         count_depth = sorted(count_depth[chrom][0].items())
         fcount_depth = [d for d in count_depth if d[1] >= coveragecutoff]
         if not fcount_depth:
+            print(f'No reads with coverage >= {coveragecutoff} in {bamfile}')
             return
         start = fcount_depth[0][0]
         stop = fcount_depth[-1][0]
@@ -212,6 +218,7 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
                 left = right + 1
         else:
             if avecov < coveragecutoff:
+                print(f'{bamfile} average coverage {avecov} < {coveragecutoff}')
                 return
             start += 1  # 0 based to 1 based
             stop += 1

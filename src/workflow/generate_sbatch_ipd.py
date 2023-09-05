@@ -28,6 +28,9 @@ module load smrtanalysis
         os.path.join(log, '{}.ipd.err'.format(job)),
         num_subjobs)]
     for zmw in zmw_list:
+        if not os.path.isfile('{}/tmp.{}.bam'.format(bamdir, zmw)):
+            continue
+        content.append('pbindex {}/tmp.{}.bam'.format(bamdir, zmw))
         content.append('python '
                        '{}/ipd_analysis.py '
                        '-b {}/tmp.{}.bam -o {} -m {} -r {} -c {} -f {} -t {} -s {} --is_clean {}'.format(
