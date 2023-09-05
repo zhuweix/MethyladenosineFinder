@@ -3,7 +3,7 @@ import argparse
 import os
 
 def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, batch: int, score_fn: str, log: str, job: str,
-                   motifmodfile: str, reference: str, coveragecutoff: int, is_strict: int, timeout: int, is_clean: bool):
+                   motifmodfile: str, reference: str, coveragecutoff: int, is_strict: int, timeout: int, is_clean: bool, ipd_time: str):
     """Generate Swarm file for IPDSummary analysis"""
     # load zmw list
     zmw_list = []
@@ -12,34 +12,63 @@ def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, 
             zmw_list.append(line.split()[0])
     script_dir = os.path.dirname(os.path.realpath(__file__))
     num_jobs = len(zmw_list)
+    batch = batch * 2
     num_subjobs = num_jobs // batch
     if num_jobs % batch != 0:
         num_subjobs += 1
     # generate command
-    content = [r'''#!/bin/bash
-#SBATCH -o {}
-#SBATCH -e {}
-#SBATCH --cpus-per-task=1
-#SBATCH --array=1-{}
-module load samtools
-module load smrtanalysis
-'''.format(
-        os.path.join(log, '{}.ipd.out'.format(job)),
-        os.path.join(log, '{}.ipd.err'.format(job)),
-        num_subjobs)]
+    env = '''
+ipdanalysis="python {}/ipd_analysis.py"
+bamdir="{}"
+outdir="{}"
+motifmodfile="{}"
+scorefn="{}"
+ref="{}"    
+'''.format(script_dir, bamdir, outdir, motifmodfile, score_fn, reference)
+    prefix = swarmfile[:-3] + '.tmp'
+    top_script = [f'''#!/bin/bash
+#SBATCH --job-name={job} 
+#SBATCH -o {log}/{job}.top.out
+#SBATCH -e {log}/{job}.top.err 
+prefix={prefix}
+''']
+    top_script.append(env)
+    top_script.append(f'''
+task_ids=$(seq 0 {num_subjobs - 1})
+previous_task_id=""
+for task_id in $task_ids; do
+    job_id=$(sbatch ${{prefix}}.${{task_id}}.sh)
+done    
+    ''')
+    cmds = []
     for zmw in zmw_list:
         if not os.path.isfile('{}/tmp.{}.bam'.format(bamdir, zmw)):
             continue
-        content.append('pbindex {}/tmp.{}.bam'.format(bamdir, zmw))
-        content.append('python '
-                       '{}/ipd_analysis.py '
-                       '-b {}/tmp.{}.bam -o {} -m {} -r {} -c {} -f {} -t {} -s {} --is_clean {}'.format(
-                        script_dir, bamdir, zmw, outdir, motifmodfile,
-                        reference, coveragecutoff, is_strict, timeout, score_fn, is_clean))
+        cmds.append('pbindex $bamdir/tmp.{}.bam'.format(zmw))
+        cmds.append('$ipdanalysis '
+                       '-b $bamdir/tmp.{}.bam -o $outdir -m $motifmodfile -r $ref -c {} -f {} -t {} -s $scorefn --is_clean {}'.format(
+                        zmw, coveragecutoff, is_strict, timeout, is_clean))
 
     with open(swarmfile, 'w') as filep:
-        filep.write('\n'.join(content))
+        filep.write('\n'.join(top_script))
+    for i in range(num_subjobs):
+        with open(f'{prefix}.{i}.sh', 'w') as filep:
+            header = (
+f'''#!/bin/bash
+#SBATCH --job-name={job}.{i}
+#SBATCH -o {log}/tmp.{job}.{i}.out
+#SBATCH -e {log}/tmp.{job}.{i}.err 
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=12g
+#SBATCH --time={ipd_time}
 
+module load smrtanalysis
+module load samtools
+''')            
+            filep.write(header)
+            filep.write(env)
+            filep.write('\n'.join(cmds[i*batch:(i+1)*batch]))
+            filep.write('\n')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -57,6 +86,7 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--is_strict_flag', default=1)
     parser.add_argument('--batch', type=int, default=400)
     parser.add_argument('--is_clean', default=True)
+    parser.add_argument('--ipd_time', default="8:00:00", type=str)
 
     args = parser.parse_args()
 
@@ -74,4 +104,5 @@ if __name__ == "__main__":
         coveragecutoff=args.coveragecutoff,
         timeout=args.timeout,
         score_fn=args.scorefn,
-        batch=args.batch)
+        batch=args.batch,
+        ipd_time=args.ipd_time)

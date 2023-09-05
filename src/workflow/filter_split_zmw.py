@@ -63,6 +63,7 @@ def filter_split_zmw(bamfile: str, coveragecutoff: int, outdir: str):
                                 chrom = c
                                 ct = len(reads)
                     tmp_reads = tmp_dict[chrom]
+
                     if len(tmp_reads) < coveragecutoff:
                         continue
                     
@@ -71,7 +72,7 @@ def filter_split_zmw(bamfile: str, coveragecutoff: int, outdir: str):
                             outbam.write(read2)
                             del read2
                 
-                    if os.path.isfile('{}/tmp.{}.bam'.format(outdir, holeNumber)):
+                    if os.path.isfile('{}/tmp.{}.bam'.format(outdir, holeNumber)) and (os.path.getsize('{}/tmp.{}.bam'.format(outdir, holeNumber)) > 0):
                         filter_ZMWholes.append(holeNumber)
                         count += 1
                         

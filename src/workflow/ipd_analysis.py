@@ -159,15 +159,18 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
 
         num_read = 1
         # split zero-depth
-        # not equal length: pick maximum
-        # equal length: randomly select one
         pos_locs = []
+        min_frag = 100
         if not np.all(cov_depth):
             tmpmulti = np.where(np.diff(cov_depth > 0) != 0)[0]
             tmpmulti = np.append(tmpmulti, len(cov_depth))
             left = 0
-            idx = 0
             for idx, right in enumerate(tmpmulti):
+                if idx % 2 == 1:
+                    left = right + 1
+                    continue
+                if right - left + 1 < min_frag:
+                    continue
                 readstart = start + left + 1
                 readstop = start + right + 1
                 readcov = int(np.mean(cov_depth[left: right + 1]))
@@ -215,7 +218,6 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
                 final_bam.append(new_read)
                 with pysam.AlignmentFile(tmp_bam, 'wb', header=header) as outbam:
                     outbam.write(new_read)
-                left = right + 1
         else:
             if avecov < coveragecutoff:
                 print(f'{bamfile} average coverage {avecov} < {coveragecutoff}')
@@ -229,7 +231,7 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
             # calulcate p-value for motif position using ipdSummary from PacBio
             cmd = ['ipdSummary', bamfile, '--reference', reference,
                    '--gff', tmp_gff, '--identify', 'm6A', '-w', '{}:{}-{}'.format(chrom, start, stop),
-                   '--quiet', '-j', '1', '--identifyMinCov', '3', '--pvalue', '0.9']  # --identify 6mA
+                   '--quiet', '-j', '1', '--identifyMinCov', '3', '--pvalue', '0.001']  # --identify 6mA
 
             proc = subprocess.run(cmd, check=True, timeout=timeout)
             # filter for high-quality motif position for each zmw

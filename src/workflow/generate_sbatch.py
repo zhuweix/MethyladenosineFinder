@@ -44,12 +44,12 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
                       '\t-t {timeout} \\\n\t--scorefn {scorefn} \\\n'
                       '\t--log {log} \\\n\t--is_clean {isclean} \\\n'
                       '\t--job {job} \\\n\t--batch {batch}\\\n'
-                      '\t-r {ref} \\\n\t-f {strict_flag}\n\n').format(
+                      '\t-r {ref} \\\n\t-f {strict_flag} --time {ipd_time}\n\n').format(
             gen_py=gen_ipd_py, log=logdir, job=jobname, scorefn=score_fn,
             zmw=fullprefix + '_zmw', ipd=fullprefix + '_ipd', batch=batchsize,
             mod=mod, ref=ref, sh=os.path.join(sbatchdir, prefix + '.ipd_analysis.sh'),
             zlist=os.path.join(fullprefix + '_zmw', 'zmw.cov.{}.list.txt'.format(cov)),
-            cov=cov, strict_flag=is_m6A, timeout=timeout, isclean=is_clean)]
+            cov=cov, strict_flag=is_m6A, timeout=timeout, isclean=is_clean, ipd_time=ipd_time)]
         filep.write('\n'.join(ipdscript))
 
     p1 = ('# Split Subreads by ZMW: Large Number of Files will be generated!\n'
