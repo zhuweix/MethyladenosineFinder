@@ -69,6 +69,8 @@ $ python setup.py install
 $ m6apreprocess index \
      -r [Reference.FASTA] \
      -o [Reference_index.data]
+# IMPORTANT: REMEMBER TO MAKE THE FAIDX file otherwise PacBIO ipdSummary will FAIL.
+$ samtools faidx [Reference.FASTA]
 
 # Recommended: Filter the Subreads using the PacBio CCS reads
 # Get ZMW list by num_pass and AverageQual in PacBio CCS reads

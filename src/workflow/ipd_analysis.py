@@ -231,7 +231,7 @@ def analyze_ipd_zmw(bamfile: str, output: str, motifpositionfile: str, scorecuto
             # calulcate p-value for motif position using ipdSummary from PacBio
             cmd = ['ipdSummary', bamfile, '--reference', reference,
                    '--gff', tmp_gff, '--identify', 'm6A', '-w', '{}:{}-{}'.format(chrom, start, stop),
-                   '--quiet', '-j', '1', '--identifyMinCov', '3', '--pvalue', '0.001']  # --identify 6mA
+                   '--quiet', '-j', '1', '--identifyMinCov', '3', '--pvalue', '0.9']  # --identify 6mA
 
             proc = subprocess.run(cmd, check=True, timeout=timeout)
             # filter for high-quality motif position for each zmw
