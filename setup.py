@@ -27,7 +27,10 @@ setup(
     ],
     keywords="methyladenosine, methylated adenine, PacBio, computational biology",
     package_dir={"": "src",},
-    package_data={"src": ["asset/*.data", "asset/*.csv", "asset/*.png"]},
+    package_data={
+            "": ["*.data", "*.csv", "*.png"],
+            "workflow": ["../asset/*.data", "../asset/*.csv", "../asset/*.png"],
+        },
     packages=find_packages(where="src"),
     python_requires=">=3.7, <4",
     install_requires=["numpy",
