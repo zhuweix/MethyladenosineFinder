@@ -74,7 +74,7 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
             r'''#!/bin/bash
 #SBATCH -o {}
 #SBATCH -e {}
-module load samtools''').format(log_out, log_err),
+module load samtools/1.17''').format(log_out, log_err),
             ("find  {ipd} -name '*.bam' > {bamlist} ; \\\n"
              '\tsamtools cat --threads {thread} --no-PG -o {merge} \\\n'
              '\t-b {bamlist} ; \\\n'
