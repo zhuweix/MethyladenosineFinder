@@ -74,11 +74,12 @@ def generate_sbatch(bam: str, out: str, prefix: str, jobname: str, gres: str, sc
             r'''#!/bin/bash
 #SBATCH -o {}
 #SBATCH -e {}
+set -e
 module load samtools/1.17''').format(log_out, log_err),
-            ("find  {ipd} -name '*.bam' > {bamlist} ; \\\n"
+            ("find  {ipd} -name '*.bam' > {bamlist} && \\\n"
              '\tsamtools cat --threads {thread} --no-PG -o {merge} \\\n'
-             '\t-b {bamlist} ; \\\n'
-             'samtools sort -o {sort} \\\n\t {merge} ; \\\n'
+             '\t-b {bamlist} && \\\n'
+             'samtools sort -o {sort} \\\n\t {merge} && \\\n'
              'samtools index {sort}\n\n').format(
             ipd=fullprefix + '_ipd',
             bamlist=os.path.join(fullprefix + '_ipd', 'bamfile.list'),

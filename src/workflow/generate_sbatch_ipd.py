@@ -11,11 +11,7 @@ def generate_sbatch_ipd(bamdir: str, swarmfile: str, zmwfile: str, outdir: str, 
         for line in filep:
             zmw_list.append(line.split()[0])
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    num_jobs = len(zmw_list)
-    batch = batch * 2
-    num_subjobs = num_jobs // batch
-    if num_jobs % batch != 0:
-        num_subjobs += 1
+
     # generate command
     env = '''
 ipdanalysis="python {}/ipd_analysis.py"
@@ -26,6 +22,19 @@ scorefn="{}"
 ref="{}"    
 '''.format(script_dir, bamdir, outdir, motifmodfile, score_fn, reference)
     prefix = swarmfile[:-3] + '.tmp'
+    cmds = []
+    for zmw in zmw_list:
+        if not os.path.isfile('{}/tmp.{}.bam'.format(bamdir, zmw)):
+            continue
+        cmds.append('pbindex $bamdir/tmp.{}.bam'.format(zmw))
+        cmds.append('$ipdanalysis '
+                    '-b $bamdir/tmp.{}.bam -o $outdir -m $motifmodfile -r $ref -c {} -f {} -t {} -s $scorefn --is_clean {}'.format(
+                    zmw, coveragecutoff, is_strict, timeout, is_clean))
+
+    num_jobs = len(cmds) //2
+    num_subjobs = num_jobs // batch
+    if num_jobs % batch != 0:
+        num_subjobs += 1
     top_script = [f'''#!/bin/bash
 #SBATCH --job-name={job} 
 #SBATCH -o {log}/{job}.top.out
@@ -40,14 +49,6 @@ for task_id in $task_ids; do
     job_id=$(sbatch ${{prefix}}.${{task_id}}.sh)
 done    
     ''')
-    cmds = []
-    for zmw in zmw_list:
-        if not os.path.isfile('{}/tmp.{}.bam'.format(bamdir, zmw)):
-            continue
-        cmds.append('pbindex $bamdir/tmp.{}.bam'.format(zmw))
-        cmds.append('$ipdanalysis '
-                       '-b $bamdir/tmp.{}.bam -o $outdir -m $motifmodfile -r $ref -c {} -f {} -t {} -s $scorefn --is_clean {}'.format(
-                        zmw, coveragecutoff, is_strict, timeout, is_clean))
 
     with open(swarmfile, 'w') as filep:
         filep.write('\n'.join(top_script))
@@ -67,7 +68,7 @@ module load samtools
 ''')            
             filep.write(header)
             filep.write(env)
-            filep.write('\n'.join(cmds[i*batch:(i+1)*batch]))
+            filep.write('\n'.join(cmds[i*batch*2:(i+1)*batch*2]))
             filep.write('\n')
 
 if __name__ == "__main__":

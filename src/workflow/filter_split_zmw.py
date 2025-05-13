@@ -50,9 +50,9 @@ def filter_split_zmw(bamfile: str, coveragecutoff: int, outdir: str):
                 if zmw_read[holeNumber][0] == zmw_count[holeNumber]:
                     tmp_dict = {}
                     for read2 in zmw_read[holeNumber][1]:
-                        chrom = read.reference_name
-                        start = read.reference_start
-                        end = read.reference_end
+                        chrom = read2.reference_name
+                        start = read2.reference_start
+                        end = read2.reference_end
                         tmp_dict.setdefault(chrom, [])
                         tmp_dict[chrom].append((start, end, read2))
                     if len(tmp_dict) > 1:
@@ -65,6 +65,7 @@ def filter_split_zmw(bamfile: str, coveragecutoff: int, outdir: str):
                     tmp_reads = tmp_dict[chrom]
 
                     if len(tmp_reads) < coveragecutoff:
+                        del zmw_read[holeNumber]
                         continue
                     
                     with pysam.AlignmentFile('{}/tmp.{}.bam'.format(outdir, holeNumber), 'wb', header=bam.header) as outbam:
