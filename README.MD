@@ -10,6 +10,7 @@ This program predicts single-molecule
   <a href="#how-to-use">How To Use</a> •
   <a href="#input-file-format">Input File Format</a> •    
   <a href="#output-file-format">Output File Format</a> •  
+  <a href="#citation">Citation</a> •  
   <a href="#contact">Contact</a> 
 </p>
 
@@ -231,7 +232,9 @@ alignment is used).
 > 
 
 
+## Citation
 
+Allison F Dennis, Zhuwei Xu, David J Clark, Examining chromatin heterogeneity through PacBio long-read sequencing of M.EcoGII methylated genomes: an m6A detection efficiency and calling bias correcting pipeline, Nucleic Acids Research, Volume 52, Issue 9, 22 May 2024, Page e45, https://doi.org/10.1093/nar/gkae288
 
 
 
